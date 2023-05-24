@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { ObjectController } from './ObjectController';
 
 export class SceneController {
     scene: THREE.Scene;
@@ -7,10 +8,20 @@ export class SceneController {
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
     frustumSize: number = 10;
+    mouse: THREE.Vector2;
+    objectController: ObjectController;
+    raycaster: THREE.Raycaster;
 
     constructor() {
         // Create scene
         this.scene = new THREE.Scene();
+
+        // Initialize ObjectController
+        this.objectController = new ObjectController();
+
+         // Initialize raycaster and mouse vector
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
 
         // Setup renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -28,19 +39,19 @@ export class SceneController {
             1000
         );
 
-        // Position camera and tilt it 45 degrees
+        // Position camera
         this.camera.position.set(20, 20, 20);
-        this.camera.lookAt(0, 0, 0);
-        this.camera.rotation.z = -Math.PI / 4;  // Tilt 45 degrees
 
         // Setup orbit controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
         this.controls.enableRotate = false;  // Disable rotation
         this.controls.enablePan = true;  // Enable panning
+        this.controls.target.set(0, 0, 0);
 
-        // Add resize event listener
+        // Add resize and click event listeners
         window.addEventListener('resize', this.onWindowResize, false);
+        window.addEventListener('click', this.onClick, false);
 
         this.addPlane();
         this.addObjects();
@@ -83,6 +94,34 @@ export class SceneController {
         const geometry = new THREE.PlaneGeometry(20, 20);
         const material = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide });
         const plane = new THREE.Mesh(geometry, material);
+        plane.rotation.x = Math.PI / 2;  // Tilt the plane 45 degrees
+
         this.scene.add(plane);
     }
+
+    onClick = (event: MouseEvent) => {
+        event.preventDefault();
+    
+        // Update the mouse position
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    
+        // Update the picking ray with the camera and mouse position
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+    
+        // Calculate objects intersecting the picking ray
+        const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+    
+        for (let i = 0; i < intersects.length; i++) {
+          const object = intersects[i].object;
+          if (object instanceof THREE.Mesh && !(object.geometry instanceof THREE.PlaneGeometry)) {
+            console.log(object);
+            this.objectController.setTarget(object);
+            return;
+          }
+        }
+    
+        // If no object was selected, clear the current target
+        this.objectController.setTarget(null);
+      };
 }

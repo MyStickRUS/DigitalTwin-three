@@ -7,7 +7,7 @@ class App {
 
   constructor() {
     this.sceneController = new SceneController();
-    this.objectController = new ObjectController(this.sceneController);
+    this.objectController = new ObjectController();
   }
 }
 
