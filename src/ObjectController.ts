@@ -1,6 +1,5 @@
-// src/ObjectController.ts
 import * as THREE from 'three';
-import { GUI } from 'dat.gui';
+import { GUI, GUIController } from 'dat.gui';
 
 interface Position {
     x: number;
@@ -11,30 +10,48 @@ interface Position {
 export class ObjectController {
     private gui: GUI;
     private target: THREE.Object3D | null = null;
-    private position: Position = { x: 0, y: 0, z: 0 };
+
+    private controllers: GUIController[] = [];
 
     constructor() {
         this.gui = new GUI();
-        this.gui.add(this.position, 'x').listen().onChange(this.updateTargetPosition);
-        this.gui.add(this.position, 'y').listen().onChange(this.updateTargetPosition);
-        this.gui.add(this.position, 'z').listen().onChange(this.updateTargetPosition);
     }
 
     setTarget(target: THREE.Object3D | null) {
+        if(!!target) {
+            this.clearControllers();
+        }
+
         this.target = target;
 
-        if (target) {
-            this.position.x = target.position.x;
-            this.position.y = target.position.y;
-            this.position.z = target.position.z;
-        }
+        this.showControllers()
     }
 
-    private updateTargetPosition = () => {
-        if (this.target) {
-            this.target.position.x = this.position.x;
-            this.target.position.y = this.position.y;
-            this.target.position.z = this.position.z;
+    private clearControllers = () => {
+        for (let i = 0; i< this.controllers.length; ++i) {
+            this.controllers[i].remove();
         }
-    };
+
+        this.controllers = [];
+    }
+
+    private showControllers = () => {
+        if(!this.target) {
+            return;
+        }
+
+        const posMin = -20;
+        const posMax = 20;
+        const posStep = 0.01;
+
+    
+        const controllers = [
+            this.gui.add(this.target.position, 'x', posMin, posMax, posStep),
+            this.gui.add(this.target.position, 'y', posMin, posMax, posStep),
+            this.gui.add(this.target.position, 'z', posMin, posMax, posStep),
+        ]
+
+        this.controllers.push(...controllers);
+    }
+
 }

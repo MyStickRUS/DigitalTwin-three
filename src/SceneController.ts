@@ -7,10 +7,12 @@ export class SceneController {
     camera: THREE.OrthographicCamera;
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
-    frustumSize: number = 10;
     mouse: THREE.Vector2;
     objectController: ObjectController;
     raycaster: THREE.Raycaster;
+    
+    frustumSize: number = 10;
+    defaultObjectYPosition: number = 0.5;
 
     constructor() {
         // Create scene
@@ -87,6 +89,8 @@ export class SceneController {
         const geometry = new THREE.BoxGeometry();
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         const cube = new THREE.Mesh(geometry, material);
+        cube.position.setY(this.defaultObjectYPosition);
+
         this.scene.add(cube);
     }
 
