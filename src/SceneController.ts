@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
+import { SCENE_OBJECTS } from './objects';
 
 export class SceneController {
     scene: THREE.Scene;
@@ -86,12 +87,16 @@ export class SceneController {
     };
 
     addObjects = () => {
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        cube.position.setY(this.defaultObjectYPosition);
-
-        this.scene.add(cube);
+        SCENE_OBJECTS.forEach(obj => {
+            const geometry = new THREE.BoxGeometry();
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.setY(this.defaultObjectYPosition);
+            cube.position.setX(obj.xPos)
+            cube.position.setZ(obj.zPos)
+    
+            this.scene.add(cube);
+        });
     }
 
     addPlane = () => {
