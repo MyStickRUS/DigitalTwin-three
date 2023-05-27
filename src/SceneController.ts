@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
 import { SCENE_OBJECTS } from './objects';
+import { Tooltip } from './Tooltip';
 
 export class SceneController {
     scene: THREE.Scene;
@@ -21,6 +22,9 @@ export class SceneController {
 
     frustumSize: number = 10;
     defaultObjectYPosition: number = 0.5;
+
+    tooltip: Tooltip | null = null;
+    tooltipUpdateInterval: number | null = null;
 
     constructor() {
         // Create scene
@@ -112,6 +116,10 @@ export class SceneController {
         event.preventDefault();
 
         this.objectController.setTarget(this.mousePointedObject);
+
+        if(this.mousePointedObject) {
+            this.showTooltip();
+        }
     };
 
     onMouseMove = (event: MouseEvent) => {
@@ -133,5 +141,27 @@ export class SceneController {
 
     getCamera = () => {
         return new THREE.PerspectiveCamera(45, this.cameraAspect, 1, 1000)
+    }
+
+    showTooltip = () => {
+        if(!this.mousePointedObject) {
+            return;
+        }
+
+        if(this.tooltip) {
+            this.scene.remove(this.tooltip);
+        }
+
+        this.tooltip = new Tooltip(`Temp: ${Math.round(Math.random()*100)}`);
+        this.tooltip.position.copy(this.mousePointedObject.position).add(new THREE.Vector3(0, this.mousePointedObject.scale.y, 0));
+        this.scene.add(this.tooltip);
+
+        if(this.tooltipUpdateInterval) {
+            clearInterval(this.tooltipUpdateInterval);
+        }
+
+        this.tooltipUpdateInterval  = setInterval(() => {
+            this.tooltip?.setText(`Temp: ${Math.round(Math.random()*100)}`);
+        }, 1000);
     }
 }
