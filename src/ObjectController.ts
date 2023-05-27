@@ -18,6 +18,10 @@ export class ObjectController {
     }
 
     setTarget(target: THREE.Object3D | null) {
+        if(!target) {
+            return;
+        }
+
         this.clearControllers();
 
         this.target = target;

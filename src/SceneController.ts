@@ -11,7 +11,11 @@ export class SceneController {
     mouse: THREE.Vector2;
     objectController: ObjectController;
     raycaster: THREE.Raycaster;
-    
+
+    mousePointedObject: THREE.Object3D | null = null;
+
+    mainPlane: THREE.Mesh;
+
     frustumSize: number = 10;
     defaultObjectYPosition: number = 0.5;
 
@@ -22,7 +26,7 @@ export class SceneController {
         // Initialize ObjectController
         this.objectController = new ObjectController();
 
-         // Initialize raycaster and mouse vector
+        // Initialize raycaster and mouse vector
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
 
@@ -34,11 +38,11 @@ export class SceneController {
         // Setup camera
         const aspect = window.innerWidth / window.innerHeight;
         this.camera = new THREE.OrthographicCamera(
-            this.frustumSize * aspect / - 2, 
-            this.frustumSize * aspect / 2, 
-            this.frustumSize / 2, 
-            this.frustumSize / - 2, 
-            0.1, 
+            this.frustumSize * aspect / - 2,
+            this.frustumSize * aspect / 2,
+            this.frustumSize / 2,
+            this.frustumSize / - 2,
+            0.1,
             1000
         );
 
@@ -55,10 +59,16 @@ export class SceneController {
         // Add resize and click event listeners
         window.addEventListener('resize', this.onWindowResize, false);
         window.addEventListener('click', this.onClick, false);
+        window.addEventListener('mousemove', this.onMouseMove, false);
+        // window.addEventListener('dblclick', this.onDoubleClick, false);
 
-        this.addPlane();
+        this.mainPlane = this.addPlane();
         this.addObjects();
         this.animate();
+    }
+
+    onDoubleClick = () => {
+        throw new Error('Method not implemented.');
     }
 
     onWindowResize = () => {
@@ -94,7 +104,7 @@ export class SceneController {
             cube.position.setY(this.defaultObjectYPosition);
             cube.position.setX(obj.xPos)
             cube.position.setZ(obj.zPos)
-    
+
             this.scene.add(cube);
         });
     }
@@ -106,31 +116,30 @@ export class SceneController {
         plane.rotation.x = Math.PI / 2;  // Tilt the plane 45 degrees
 
         this.scene.add(plane);
+
+        return plane;
     }
 
     onClick = (event: MouseEvent) => {
         event.preventDefault();
-    
+
+        this.objectController.setTarget(this.mousePointedObject);
+    };
+
+    onMouseMove = (event: MouseEvent) => {
+        event.preventDefault();
+
         // Update the mouse position
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    
+
         // Update the picking ray with the camera and mouse position
         this.raycaster.setFromCamera(this.mouse, this.camera);
-    
-        // Calculate objects intersecting the picking ray
-        const intersects = this.raycaster.intersectObjects(this.scene.children, true);
-    
-        for (let i = 0; i < intersects.length; i++) {
-          const object = intersects[i].object;
-          if (object instanceof THREE.Mesh && !(object.geometry instanceof THREE.PlaneGeometry)) {
-            console.log(object);
-            this.objectController.setTarget(object);
-            return;
-          }
-        }
-    
-        // If no object was selected, clear the current target
-        this.objectController.setTarget(null);
-      };
+
+        // Calculate objects intersecting the picking ray, excluding the main pane
+        const intersects = this.raycaster.intersectObjects(this.scene.children, true)
+            .filter(int => int.object !== this.mainPlane);
+
+        this.mousePointedObject = intersects[0]?.object;
+    }
 }
