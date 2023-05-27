@@ -5,7 +5,10 @@ import { SCENE_OBJECTS } from './objects';
 
 export class SceneController {
     scene: THREE.Scene;
-    camera: THREE.OrthographicCamera;
+
+    camera: THREE.PerspectiveCamera;
+    cameraAspect: number = window.innerWidth / window.innerHeight;
+
     renderer: THREE.WebGLRenderer;
     controls: OrbitControls;
     mouse: THREE.Vector2;
@@ -36,15 +39,7 @@ export class SceneController {
         document.body.appendChild(this.renderer.domElement);
 
         // Setup camera
-        const aspect = window.innerWidth / window.innerHeight;
-        this.camera = new THREE.OrthographicCamera(
-            this.frustumSize * aspect / - 2,
-            this.frustumSize * aspect / 2,
-            this.frustumSize / 2,
-            this.frustumSize / - 2,
-            0.1,
-            1000
-        );
+        this.camera = this.getCamera()
 
         // Position camera
         this.camera.position.set(20, 20, 20);
@@ -60,7 +55,7 @@ export class SceneController {
         window.addEventListener('resize', this.onWindowResize, false);
         window.addEventListener('click', this.onClick, false);
         window.addEventListener('mousemove', this.onMouseMove, false);
-        // window.addEventListener('dblclick', this.onDoubleClick, false);
+        window.addEventListener('dblclick', this.onDoubleClick, false);
 
         this.mainPlane = this.addPlane();
         this.addObjects();
@@ -72,16 +67,8 @@ export class SceneController {
     }
 
     onWindowResize = () => {
-        const aspect = window.innerWidth / window.innerHeight;
-
-        // Update camera
-        this.camera.left = (this.frustumSize * aspect) / -2;
-        this.camera.right = (this.frustumSize * aspect) / 2;
-        this.camera.top = this.frustumSize / 2;
-        this.camera.bottom = this.frustumSize / -2;
-        // ...
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        // this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
     }
 
@@ -141,5 +128,9 @@ export class SceneController {
             .filter(int => int.object !== this.mainPlane);
 
         this.mousePointedObject = intersects[0]?.object;
+    }
+
+    getCamera = () => {
+        return new THREE.PerspectiveCamera(45, this.cameraAspect, 1, 1000)
     }
 }
