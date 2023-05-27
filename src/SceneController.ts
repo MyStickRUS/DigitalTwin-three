@@ -50,6 +50,7 @@ export class SceneController {
         this.controls.enableRotate = false;  // Disable rotation
         this.controls.enablePan = true;  // Enable panning
         this.controls.target.set(0, 0, 0);
+        this.controls.enableDamping = true;
 
         // Add resize and click event listeners
         window.addEventListener('resize', this.onWindowResize, false);
