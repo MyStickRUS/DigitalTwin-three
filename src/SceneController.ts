@@ -56,7 +56,7 @@ export class SceneController {
         // Setup orbit controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
-        this.controls.enableRotate = false;  // Disable rotation
+        this.controls.enableRotate = true;  // Enable rotation
         this.controls.enablePan = true;  // Enable panning
         this.controls.target.set(0, 0, 0);
         this.controls.enableDamping = true;
