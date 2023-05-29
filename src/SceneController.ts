@@ -17,6 +17,7 @@ export class SceneController {
     raycaster: THREE.Raycaster;
 
     mousePointedObject: THREE.Object3D | null = null;
+    tooltippedObject: THREE.Object3D | null = null;
 
     mainPlane: THREE.Mesh;
 
@@ -25,6 +26,10 @@ export class SceneController {
 
     tooltip: Tooltip | null = null;
     tooltipUpdateInterval: number | null = null;
+
+    htmlTooltip: HTMLDivElement;
+    htmlTooltipSrc: string = 'Error loading tooltip';
+    htmlTooltipUpdateInterval: number | null = null;
 
     constructor() {
         // Create scene
@@ -62,6 +67,15 @@ export class SceneController {
         window.addEventListener('mousemove', this.onMouseMove, false);
         window.addEventListener('dblclick', this.onDoubleClick, false);
 
+        const htmlTooltip = document.querySelector("div#tooltip");
+
+        if(!htmlTooltip || !(htmlTooltip instanceof HTMLDivElement)) {
+            throw new Error("Tooltip element not found")
+        }
+
+        this.htmlTooltip = htmlTooltip;
+        this.updateHtmlTooltipContent();
+
         this.mainPlane = this.addPlane();
         this.addObjects();
         this.animate();
@@ -86,6 +100,21 @@ export class SceneController {
         requestAnimationFrame(this.animate);
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
+
+        if (this.tooltippedObject) {
+            let vector = new THREE.Vector3();
+            vector.setFromMatrixPosition(this.tooltippedObject.matrixWorld);
+            vector.project(this.camera);
+
+            vector.x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            vector.y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
+
+            let offsetx = this.htmlTooltip.offsetWidth / 2;
+            let offsetY = this.htmlTooltip.offsetHeight * 1.5;
+
+            this.htmlTooltip.style.left = `${vector.x - offsetx}px`;
+            this.htmlTooltip.style.top = `${vector.y - offsetY}px`;
+        }
     };
 
     addObjects = () => {
@@ -118,8 +147,10 @@ export class SceneController {
         this.objectController.setTarget(this.mousePointedObject);
 
         if(this.mousePointedObject) {
-            this.showTooltip();
+            this.tooltippedObject = this.mousePointedObject;
         }
+
+        this.showHtmlTooltip();
     };
 
     onMouseMove = (event: MouseEvent) => {
@@ -144,24 +175,56 @@ export class SceneController {
     }
 
     showTooltip = () => {
-        if(!this.mousePointedObject) {
+        if (!this.mousePointedObject) {
             return;
         }
 
-        if(this.tooltip) {
+
+        if (this.tooltip) {
             this.scene.remove(this.tooltip);
         }
 
-        this.tooltip = new Tooltip(`Temp: ${Math.round(Math.random()*100)}`);
+        this.tooltip = new Tooltip(`Temp: ${Math.round(Math.random() * 100)}`);
         this.tooltip.position.copy(this.mousePointedObject.position).add(new THREE.Vector3(0, this.mousePointedObject.scale.y, 0));
         this.scene.add(this.tooltip);
 
-        if(this.tooltipUpdateInterval) {
+        this.tooltippedObject = this.mousePointedObject;
+
+        if (this.tooltipUpdateInterval) {
             clearInterval(this.tooltipUpdateInterval);
         }
 
-        this.tooltipUpdateInterval  = setInterval(() => {
-            this.tooltip?.setText(`Temp: ${Math.round(Math.random()*100)}`);
+        this.tooltipUpdateInterval = setInterval(() => {
+            this.tooltip?.setText(`Temp: ${Math.round(Math.random() * 100)}`);
         }, 1000);
+    }
+
+    showHtmlTooltip = () => {
+        this.htmlTooltip.hidden = false;
+    }
+
+    updateHtmlTooltipContent() {
+        if (!this.htmlTooltip) {
+            return;
+        }
+
+        const tooltip = this.htmlTooltip;
+
+        const cb = () => {
+            [
+                [tooltip.querySelector('#tooltipEnergyMetric'), 10],
+                [tooltip.querySelector('#tooltipHeatMetric'), 5],
+                [tooltip.querySelector('#tooltipSteamMetric'), 1],
+            ].forEach(payload => {
+                const el = payload[0];
+                if (!el) return;
+
+                const multiplier = payload[1] as number;
+
+                (el as Element).innerHTML = Math.floor(Math.random() * 1000 * multiplier).toString();
+            })
+        }
+
+        setInterval(cb, 1000);
     }
 }

@@ -34,7 +34,7 @@ export class Tooltip extends THREE.Sprite {
         this.context.fillStyle = 'white';
         this.context.fillRect(0, 0, TOOLTIP_SIZE.x, TOOLTIP_SIZE.y);
         this.context.fillStyle = 'black';
-        this.context.fillText(text, 0, 30);
+        this.context.fillText(`<b>${text}</b>`, 0, 30);
         (this.material.map as THREE.CanvasTexture).needsUpdate = true;
     }
 }

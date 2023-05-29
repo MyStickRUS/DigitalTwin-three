@@ -1,15 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-        <title>3D Interactive Scene</title>
-        <style>
-          body {
-            margin: 0;
-            overflow: hidden;
-          }
-        </style>
-      </head>
-	<body>
-	<script type="module" src="src/index.ts"></script>
-	</body>
+<head>
+  <meta charset="UTF-8">
+  <title>3D Interactive Scene</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .block {
+      display: inline-block;
+      padding-right: 1em;
+    }
+
+    .p0 {
+      padding: 0;
+    }
+
+    .m0 {
+      margin: 0;
+    }
+
+    #tooltip {
+      font-size: 0.7rem;
+      position: absolute;
+      width: fit-content;
+      height: fit-content;
+      background-color: beige;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="module" src="src/index.ts"></script>
+
+  <div  hidden id="tooltip">
+    <p>Химико-металлургический цех</p>
+    <div class="block">
+      <p class="p0 m0">Энергия</p>
+      <p class="p0 m0" id="tooltipEnergyMetric">6528</p>
+      <p class="p0 m0">Квт/ч</p>
+    </div>
+    <div class="block">
+      <p class="p0 m0">Тепло</p>
+      <p class="p0 m0" id="tooltipHeatMetric">380</p>
+      <p class="p0 m0">Гкал/сут</p>
+    </div>
+    <div class="block">
+      <p class="p0 m0">Пар</p>
+      <p class="p0 m0" id="tooltipSteamMetric">56</p>
+      <p class="p0 m0">тмк/сут</p>
+    </div>
+  </div>
+
+</body>
+
 </html>
