@@ -82,24 +82,27 @@ export class SceneController {
         this.animate();
     }
 
-    onDoubleClick = (event: MouseEvent) => {
-        event.preventDefault();
-    
-        // Update the picking ray with the camera and mouse position
-        this.raycaster.setFromCamera(this.mouse, this.camera);
-    
-        // Calculate objects intersecting the picking ray, excluding the main plane
-        const intersects = this.raycaster
+    findCursorIntersectingObjects() {
+        return  this.raycaster
             .intersectObjects(this.scene.children, true)
             .filter((int) => int.object !== this.mainPlane);
-    
+    }
+
+    onClick = (event: MouseEvent) => {
+        event.preventDefault();
+
+        this.objectController.setTarget(this.mousePointedObject);
+
+        if(this.mousePointedObject) {
+            this.tooltippedObject = this.mousePointedObject;
+        }
+
+        const intersects = this.findCursorIntersectingObjects()
+
         // If we have an intersection
         if (intersects.length > 0) {
             const closestObject = intersects[0].object;
     
-            // Set the orbit control's target to the clicked object's position
-            // this.controls.target.copy(closestObject.position);
-            
             // Create a new desired camera position: a bit offset from the object's position
             const {x, y, z} = new THREE.Vector3().copy(closestObject.position).add(new THREE.Vector3(0, 5, 10));
             
@@ -108,7 +111,22 @@ export class SceneController {
             
             // Update the controls
             this.controls.update();
-        } else {
+        }
+
+        this.showHtmlTooltip();
+    };
+
+    onDoubleClick = (event: MouseEvent) => {
+        event.preventDefault();
+    
+        // Update the picking ray with the camera and mouse position
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+    
+        // Calculate objects intersecting the picking ray, excluding the main plane
+        const intersects = this.findCursorIntersectingObjects()
+
+        
+        if(!intersects.length) {
             // default position
             const defPos = {x: 20, y: 20, z: 20};
             gsap.to(this.camera.position, {...defPos, duration: 3});
@@ -172,18 +190,6 @@ export class SceneController {
         return plane;
     }
 
-    onClick = (event: MouseEvent) => {
-        event.preventDefault();
-
-        this.objectController.setTarget(this.mousePointedObject);
-
-        if(this.mousePointedObject) {
-            this.tooltippedObject = this.mousePointedObject;
-        }
-
-        this.showHtmlTooltip();
-    };
-
     onMouseMove = (event: MouseEvent) => {
         event.preventDefault();
 
@@ -195,8 +201,7 @@ export class SceneController {
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         // Calculate objects intersecting the picking ray, excluding the main pane
-        const intersects = this.raycaster.intersectObjects(this.scene.children, true)
-            .filter(int => int.object !== this.mainPlane);
+        const intersects = this.findCursorIntersectingObjects()
 
         this.mousePointedObject = intersects[0]?.object;
     }
