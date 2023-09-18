@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
 import { SCENE_OBJECTS } from './objects';
 import { Tooltip } from './Tooltip';
+import gsap from 'gsap';
 
 export class SceneController {
     scene: THREE.Scene;
@@ -81,9 +82,39 @@ export class SceneController {
         this.animate();
     }
 
-    onDoubleClick = () => {
-        throw new Error('Method not implemented.');
-    }
+    onDoubleClick = (event: MouseEvent) => {
+        event.preventDefault();
+    
+        // Update the picking ray with the camera and mouse position
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+    
+        // Calculate objects intersecting the picking ray, excluding the main plane
+        const intersects = this.raycaster
+            .intersectObjects(this.scene.children, true)
+            .filter((int) => int.object !== this.mainPlane);
+    
+        // If we have an intersection
+        if (intersects.length > 0) {
+            const closestObject = intersects[0].object;
+    
+            // Set the orbit control's target to the clicked object's position
+            // this.controls.target.copy(closestObject.position);
+            
+            // Create a new desired camera position: a bit offset from the object's position
+            const {x, y, z} = new THREE.Vector3().copy(closestObject.position).add(new THREE.Vector3(0, 5, 10));
+            
+            gsap.to(this.camera.position, {x, y, z, duration: 3});
+            gsap.to(this.controls.target, {...closestObject.position, duration: 3});
+            
+            // Update the controls
+            this.controls.update();
+        } else {
+            // default position
+            const defPos = {x: 20, y: 20, z: 20};
+            gsap.to(this.camera.position, {...defPos, duration: 3});
+        }
+    };
+    
 
     onWindowResize = () => {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
