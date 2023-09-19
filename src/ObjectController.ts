@@ -3,28 +3,144 @@ import { GUI, GUIController } from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export type SceneObject = {
-    xPos: number,
-    zPos: number,
     fileName: string,
-}
-
-const boundingBoxesFileNames = ["01.glb", "02.glb", "03.glb", "04.glb", "05.glb", "06.glb", "07.glb", "08.glb", "09.glb", "10.glb", "11.glb", "12.glb", "13.glb", "14.glb", "15.glb", "16.glb"];
-
-
-export const SCENE_OBJECTS: SceneObject[] = [
-    {
-        xPos: -12.4,
-        zPos: -0.538,
-        fileName: '05.glb'
+    cameraPosition: {
+        x: number,
+        y: number,
+        z: number,
     }
-
-];
-
-interface Position {
-    x: number;
-    y: number;
-    z: number;
 }
+
+const BOUNDING_BOXES: SceneObject[] = [
+    {
+        fileName: '01.glb',
+        cameraPosition: {
+            x: 6.5,
+            y: 3.5,
+            z: 16,
+        }
+    },
+    {
+        fileName: '02.glb',
+        cameraPosition: {
+            x: 1,
+            y: 3.5,
+            z: 18.5,
+        }
+    },
+    {
+        fileName: '03.glb',
+        cameraPosition: {
+            x: -7.5,
+            y: 4.5,
+            z: 17,
+        }
+    },
+    {
+        fileName: '04.glb',
+        cameraPosition: {
+            x: -7.5,
+            y: 2.5,
+            z: 9.5,
+        }
+    },
+    {
+        fileName: '05.glb',
+        cameraPosition: {
+            x: -4.5,
+            y: 9,
+            z: 10.5,
+        }
+    },
+    {
+        fileName: '06.glb',
+        cameraPosition: {
+            x: -2.5,
+            y: 7,
+            z: 0,
+        }
+    },
+    {
+        fileName: '07.glb',
+        cameraPosition: {
+            x: -3.5,
+            y: 15,
+            z: 2,
+        }
+    },
+    {
+        fileName: '08.glb',
+        cameraPosition: {
+            x: -2.5,
+            y: 7.5,
+            z: -2.5,
+        }
+    },
+    {
+        fileName: '09.glb',
+        cameraPosition: {
+            x: -2.5,
+            y: 4,
+            z: -7.5,
+        }
+    },
+    {
+        fileName: '10.glb',
+        cameraPosition: {
+            x: 0,
+            y: 4.5,
+            z: -4.5,
+        }
+    },
+    {
+        fileName: '11.glb',
+        cameraPosition: {
+            x: 6.5,
+            y: 4.5,
+            z: -2.5,
+        }
+    },
+    {
+        fileName: '12.glb',
+        cameraPosition: {
+            x: 10,
+            y: 4,
+            z: -5.5,
+        }
+    },
+    {
+        fileName: '13.glb',
+        cameraPosition: {
+            x: 23.5,
+            y: 4,
+            z: 9.5,
+        }
+    },
+    {
+        fileName: '14.glb',
+        cameraPosition: {
+            x: 23.5,
+            y: 6.5,
+            z: 0,
+        }
+    },
+    {
+        fileName: '15.glb',
+        cameraPosition: {
+            x: 28,
+            y: 6.5,
+            z: 2,
+        }
+    },
+    {
+        fileName: '16.glb',
+        cameraPosition: {
+            x: 6.5,
+            y: 2.5,
+            z: 6.5,
+        }
+    },
+];
 
 export class ObjectController {
     generateAnnotationTexture(number: number): THREE.Sprite {
@@ -70,7 +186,7 @@ export class ObjectController {
                 model.userData.isClickable = false;
                 scene.add(model);
             },
-            undefined,  // onProgress can be used for loading progress
+            undefined,
             (error) => console.error('An error occurred while loading the model:', error)
         )
     };
@@ -80,22 +196,24 @@ export class ObjectController {
 
         const transparentMaterial = new THREE.MeshStandardMaterial({ color: 'black', opacity: 0.1, transparent: true });
 
-        boundingBoxesFileNames.forEach(fileName => {
+        BOUNDING_BOXES.forEach(obj => {
             loader.load(
-                fileName,
+                obj.fileName,
                 (gltf) => {
                     const model = gltf.scene;
                     // model.position.set(obj.xPos, 0, obj.zPos);
                     model.position.set(0, 0, 0)
                     model.userData.isClickable = true;
+                    Object.assign(model.userData, obj)
                     model.traverse((child) => {
                         if ('material' in child) {
                             child.material = transparentMaterial;
                         }
                     });
                     scene.add(model);
+                    model.parent?.updateMatrixWorld()
                 },
-                undefined,  // onProgress can be used for loading progress
+                undefined,
                 (error) => console.error('An error occurred while loading the model:', error)
             )
         })

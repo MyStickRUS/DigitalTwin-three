@@ -3,14 +3,15 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
 import gsap from 'gsap';
 import { getHtmlTooltip, updateHtmlTooltipContent } from './Tooltip';
+import { GUI } from 'dat.gui';
 
 const CAMERA_DEFAULT_POSITION = {
-    x: 20,
-    y: 20,
-    z: 20
+    x: 15,
+    y: 27.5,
+    z: 40
 }
 
-const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 3;
+const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
 const TOOLTIP_UPDATE_INTERVAL_MS = 1000;
 export class SceneController {
@@ -69,6 +70,10 @@ export class SceneController {
         this.objectController.addFactory(this.scene);
         this.objectController.addBoundingBoxes(this.scene);
         this.animate();
+
+        if(this.debug) {
+            this.addCameraControl();
+        }
     }
 
     setupControls() {
@@ -89,27 +94,61 @@ export class SceneController {
 
     onClick = (event: MouseEvent) => {
         event.preventDefault();
-
-        if(this.debug) {
-            console.log(
-                this.raycaster.intersectObjects(this.scene.children.filter(obj => obj.userData.isClickable))
-            )
-        }
-
+    
+        const closestIntersection = this.raycaster.intersectObjects(this.scene.children.filter(obj => obj.userData.isClickable))[0]
+        console.log(closestIntersection)
+    
         if(!this.mousePointedObject) {
             return
         }
         
         this.tooltippedObject = this.mousePointedObject;
-        debugger;
-        const {x, y, z} = new THREE.Vector3().copy(this.mousePointedObject.position).add(new THREE.Vector3(0, 5, 10));
+    
+        let offset = new THREE.Vector3(0, 5, 0);  // adjust as necessary to get the desired view
+        if (closestIntersection) {
+            debugger;
 
-        gsap.to(this.camera.position, {x, y, z, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
-        gsap.to(this.controls.target, {...this.mousePointedObject.position, duration: 3});
+            // const worldPosition = new THREE.Vector3();
+            // closestObject.getWorldPosition(worldPosition);
+            // console.log(worldPosition)
+            // this.camera.lookAt(worldPosition);
+            // closestObject.removeFromParent()
+            gsap.to(this.camera.position, {
+                x: closestIntersection.object.parent?.userData.cameraPosition.x,
+                y: closestIntersection.object.parent?.userData.cameraPosition.y,
+                z: closestIntersection.object.parent?.userData.cameraPosition.z,
+                duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS
+            });
+        
+            // // Move the camera's look-at target to the object's position
+            gsap.to(this.controls.target, {
+                x: closestIntersection.point.x,
+                y: closestIntersection.point.y,
+                z: closestIntersection.point.z,
+                duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS
+            });
+        }
 
         this.controls.update();
         this.showHtmlTooltip();
     };
+    
+
+    addCameraControl() {
+        const gui = new GUI();
+        const folder = gui.addFolder('Camera controls');
+
+        gui.add( this.camera.position , 'x', -50, 50 ).step(0.5).listen()
+        // .onChange(val => this.camera.position.setX(val))
+        gui.add( this.camera.position , 'y', 0, 50 ).step(0.5).listen()
+        // .onChange(val => this.camera.position.setY(val))
+        gui.add( this.camera.position , 'z', -50, 50 ).step(0.5).listen()
+        // .onChange(val => this.camera.position.setZ(val))
+
+        // folder.add(this.camera.position, 'x').listen().onChange(value => {
+        //     this.camera.position.x = value;
+        // });
+    }
 
     onDoubleClick = (event: MouseEvent) => {
         event.preventDefault();
@@ -117,7 +156,10 @@ export class SceneController {
         if(!this.mousePointedObject) {
             this.hideHtmlTooltip();
 
-            return gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+            gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+            // this.controls.target = this.scene.position
+            // TODO:
+            return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
         }
     };
 
