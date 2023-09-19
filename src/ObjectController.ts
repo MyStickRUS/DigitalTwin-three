@@ -1,6 +1,24 @@
 import * as THREE from 'three';
 import { GUI, GUIController } from 'dat.gui';
-import { SceneObject } from './objects';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+export type SceneObject = {
+    xPos: number,
+    zPos: number,
+    fileName: string,
+}
+
+const boundingBoxesFileNames = ["01.glb", "02.glb", "03.glb", "04.glb", "05.glb", "06.glb", "07.glb", "08.glb", "09.glb", "10.glb", "11.glb", "12.glb", "13.glb", "14.glb", "15.glb", "16.glb"];
+
+
+export const SCENE_OBJECTS: SceneObject[] = [
+    {
+        xPos: -12.4,
+        zPos: -0.538,
+        fileName: '05.glb'
+    }
+
+];
 
 interface Position {
     x: number;
@@ -9,54 +27,6 @@ interface Position {
 }
 
 export class ObjectController {
-    private gui: GUI;
-    private target: THREE.Object3D | null = null;
-
-    private controllers: GUIController[] = [];
-
-    constructor() {
-        this.gui = new GUI();
-    }
-
-    setTarget(target: THREE.Object3D | null) {
-        if(!target) {
-            return;
-        }
-
-        this.clearControllers();
-
-        this.target = target;
-
-        this.showControllers()
-    }
-
-    private clearControllers = () => {
-        for (let i = 0; i< this.controllers.length; ++i) {
-            this.controllers[i].remove();
-        }
-
-        this.controllers = [];
-    }
-
-    private showControllers = () => {
-        if(!this.target) {
-            return;
-        }
-
-        const posMin = -20;
-        const posMax = 20;
-        const posStep = 0.01;
-
-    
-        const controllers = [
-            this.gui.add(this.target.position, 'x', posMin, posMax, posStep),
-            this.gui.add(this.target.position, 'y', posMin, posMax, posStep),
-            this.gui.add(this.target.position, 'z', posMin, posMax, posStep),
-        ]
-
-        this.controllers.push(...controllers);
-    }
-
     generateAnnotationTexture(number: number): THREE.Sprite {
         const canvas = document.createElement('canvas');
         canvas.width = 128;
@@ -87,34 +57,47 @@ export class ObjectController {
     
         const annotationMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, depthTest: false});
         return new THREE.Sprite(annotationMaterial);
-
-        // Adjust these values based on your desired offset and scale
-
-    }
-    
-
-    createMarker(model: SceneObject, position: THREE.Vector3) {
-        const loader = new THREE.TextureLoader();
-        loader.crossOrigin = "";
-        const map = loader.load("https://i.imgur.com/EZynrrA.png");
-        map.encoding = THREE.sRGBEncoding
-        
-        const spriteMaterialFront = new THREE.SpriteMaterial( { map } );
-        
-        const spriteFront = new THREE.Sprite( spriteMaterialFront );
-        spriteFront.position.copy(position) 
-        
-        const spriteMaterialRear = new THREE.SpriteMaterial({ 
-            map,
-            opacity: 0.3, 
-            transparent: true, 
-            depthTest: false
-        });
-        
-        const spriteRear = new THREE.Sprite( spriteMaterialRear );
-        spriteRear.position.copy(position) 
-        
-        // model.add(spriteFront, spriteRear)
     }
 
+    addFactory (scene: THREE.Scene) {
+        const loader = new GLTFLoader();
+
+        loader.load(
+            `Zavod.glb`,
+            (gltf) => {
+                const model = gltf.scene;
+                model.position.set(0, 0, 0);
+                model.userData.isClickable = false;
+                scene.add(model);
+            },
+            undefined,  // onProgress can be used for loading progress
+            (error) => console.error('An error occurred while loading the model:', error)
+        )
+    };
+
+    addBoundingBoxes(scene: THREE.Scene) {
+        const loader = new GLTFLoader();
+
+        const transparentMaterial = new THREE.MeshStandardMaterial({ color: 'black', opacity: 0.1, transparent: true });
+
+        boundingBoxesFileNames.forEach(fileName => {
+            loader.load(
+                fileName,
+                (gltf) => {
+                    const model = gltf.scene;
+                    // model.position.set(obj.xPos, 0, obj.zPos);
+                    model.position.set(0, 0, 0)
+                    model.userData.isClickable = true;
+                    model.traverse((child) => {
+                        if ('material' in child) {
+                            child.material = transparentMaterial;
+                        }
+                    });
+                    scene.add(model);
+                },
+                undefined,  // onProgress can be used for loading progress
+                (error) => console.error('An error occurred while loading the model:', error)
+            )
+        })
+    }
 }

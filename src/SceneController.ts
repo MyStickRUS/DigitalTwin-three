@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
-import { SCENE_OBJECTS } from './objects';
 import gsap from 'gsap';
 import { getHtmlTooltip, updateHtmlTooltipContent } from './Tooltip';
 
@@ -15,6 +14,7 @@ const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 3;
 
 const TOOLTIP_UPDATE_INTERVAL_MS = 1000;
 export class SceneController {
+    debug = true;
     scene: THREE.Scene;
 
     camera: THREE.PerspectiveCamera;
@@ -29,8 +29,6 @@ export class SceneController {
     mousePointedObject: THREE.Object3D | null = null;
     tooltippedObject: THREE.Object3D | null = null;
 
-    mainPlane: THREE.Mesh;
-
     frustumSize: number = 10;
     defaultObjectYPosition: number = 0.5;
 
@@ -43,6 +41,7 @@ export class SceneController {
     constructor() {
         // Create scene
         this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0xfafafa);
 
         // Initialize ObjectController
         this.objectController = new ObjectController();
@@ -67,8 +66,8 @@ export class SceneController {
         this.htmlTooltip = getHtmlTooltip();
         setInterval(() => updateHtmlTooltipContent(this.htmlTooltip), TOOLTIP_UPDATE_INTERVAL_MS);
 
-        this.mainPlane = this.addPlane();
-        this.addObjects();
+        this.objectController.addFactory(this.scene);
+        this.objectController.addBoundingBoxes(this.scene);
         this.animate();
     }
 
@@ -86,35 +85,39 @@ export class SceneController {
     findCursorIntersectingObjects() {
         return this.raycaster
             .intersectObjects(this.scene.children, true)
-            .filter((int) => int.object !== this.mainPlane);
     }
 
     onClick = (event: MouseEvent) => {
         event.preventDefault();
 
-        this.objectController.setTarget(this.mousePointedObject);
-
-        if(this.mousePointedObject) {
-            this.tooltippedObject = this.mousePointedObject;
+        if(this.debug) {
+            console.log(
+                this.raycaster.intersectObjects(this.scene.children.filter(obj => obj.userData.isClickable))
+            )
         }
 
-        if(this.mousePointedObject) {
-            const {x, y, z} = new THREE.Vector3().copy(this.mousePointedObject.position).add(new THREE.Vector3(0, 5, 10));
-            
-            gsap.to(this.camera.position, {x, y, z, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
-            gsap.to(this.controls.target, {...this.mousePointedObject.position, duration: 3});
-            
-            this.controls.update();
+        if(!this.mousePointedObject) {
+            return
         }
+        
+        this.tooltippedObject = this.mousePointedObject;
+        debugger;
+        const {x, y, z} = new THREE.Vector3().copy(this.mousePointedObject.position).add(new THREE.Vector3(0, 5, 10));
 
+        gsap.to(this.camera.position, {x, y, z, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+        gsap.to(this.controls.target, {...this.mousePointedObject.position, duration: 3});
+
+        this.controls.update();
         this.showHtmlTooltip();
     };
 
     onDoubleClick = (event: MouseEvent) => {
         event.preventDefault();
-    
+
         if(!this.mousePointedObject) {
-            gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+            this.hideHtmlTooltip();
+
+            return gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
         }
     };
 
@@ -161,48 +164,12 @@ export class SceneController {
         this.annotationSprites.forEach(s => s.material.color.set(0xffffff));
     }
 
-    addObjects = () => {
-        SCENE_OBJECTS.forEach(obj => {
-            const geometry = new THREE.BoxGeometry();
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            const cube = new THREE.Mesh(geometry, material);
-            cube.position.setY(this.defaultObjectYPosition);
-            cube.position.setX(obj.xPos)
-            cube.position.setZ(obj.zPos)
-
-            this.scene.add(cube);
-
-            const annotationSprite = this.objectController.generateAnnotationTexture(1);
-
-            annotationSprite.position.set(0, cube.geometry.parameters.height / 2, 0);
-            annotationSprite.scale.set(1, 1, 1);
-    
-            cube.add(annotationSprite);
-            cube.userData.annotationSprite = annotationSprite;
-            annotationSprite.userData.isAnnotation = true;
-            this.annotationSprites.push(annotationSprite)
-        });
-    }
-
-    addPlane = () => {
-        const geometry = new THREE.PlaneGeometry(20, 20);
-        const material = new THREE.MeshBasicMaterial({ color: 0xcccccc, side: THREE.DoubleSide });
-        const plane = new THREE.Mesh(geometry, material);
-        plane.rotation.x = Math.PI / 2;  // Tilt the plane 45 degrees
-
-        this.scene.add(plane);
-
-        return plane;
-    }
-
     onMouseMove = (event: MouseEvent) => {
         event.preventDefault();
 
-        // Update the mouse position
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        // Update the picking ray with the camera and mouse position
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         const intersects = this.findCursorIntersectingObjects()
@@ -219,6 +186,10 @@ export class SceneController {
 
     showHtmlTooltip = () => {
         this.htmlTooltip.hidden = false;
+    }
+
+    hideHtmlTooltip = () => {
+        this.htmlTooltip.hidden = true;
     }
 
 }
