@@ -1,40 +1,24 @@
-import * as THREE from 'three';
+export function updateHtmlTooltipContent(tooltip: HTMLDivElement) {
+    [
+        [tooltip.querySelector('#tooltipEnergyMetric'), 10],
+        [tooltip.querySelector('#tooltipHeatMetric'), 5],
+        [tooltip.querySelector('#tooltipSteamMetric'), 1],
+    ].forEach(payload => {
+        const el = payload[0];
+        if (!el) return;
 
-const TOOLTIP_SIZE = {
-    x: 400,
-    y: 200,
+        const multiplier = payload[1] as number;
+
+        (el as Element).innerHTML = Math.floor(Math.random() * 1000 * multiplier).toString();
+    })
 }
 
-export class Tooltip extends THREE.Sprite {
-    private canvas: HTMLCanvasElement;
-    private context: CanvasRenderingContext2D;
+export function getHtmlTooltip() {
+    const htmlTooltip = document.querySelector("div#tooltip");
 
-    constructor(text: string) {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-
-        if (!context) {
-            throw new Error('Failed to get canvas context for label');
-        }
-
-        super(new THREE.SpriteMaterial({
-            map: new THREE.CanvasTexture(canvas),
-        }));
-
-        this.canvas = canvas;
-        this.context = context;
-        this.scale.set(1, 0.5, 1);
-
-        this.setText(text);
+    if(!htmlTooltip || !(htmlTooltip instanceof HTMLDivElement)) {
+        throw new Error("Tooltip element not found")
     }
 
-    setText(text: string) {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.font = '40px Arial';
-        this.context.fillStyle = 'white';
-        this.context.fillRect(0, 0, TOOLTIP_SIZE.x, TOOLTIP_SIZE.y);
-        this.context.fillStyle = 'black';
-        this.context.fillText(`<b>${text}</b>`, 0, 30);
-        (this.material.map as THREE.CanvasTexture).needsUpdate = true;
-    }
+    return htmlTooltip;
 }

@@ -2,9 +2,18 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
 import { SCENE_OBJECTS } from './objects';
-import { Tooltip } from './Tooltip';
 import gsap from 'gsap';
+import { getHtmlTooltip, updateHtmlTooltipContent } from './Tooltip';
 
+const CAMERA_DEFAULT_POSITION = {
+    x: 20,
+    y: 20,
+    z: 20
+}
+
+const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 3;
+
+const TOOLTIP_UPDATE_INTERVAL_MS = 1000;
 export class SceneController {
     scene: THREE.Scene;
 
@@ -24,9 +33,6 @@ export class SceneController {
 
     frustumSize: number = 10;
     defaultObjectYPosition: number = 0.5;
-
-    tooltip: Tooltip | null = null;
-    tooltipUpdateInterval: number | null = null;
 
     htmlTooltip: HTMLDivElement;
     htmlTooltipSrc: string = 'Error loading tooltip';
@@ -50,42 +56,35 @@ export class SceneController {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
 
-        // Setup camera
-        this.camera = this.getCamera()
+        this.camera = this.getCamera(CAMERA_DEFAULT_POSITION)
+        this.controls = this.setupControls();
 
-        // Position camera
-        this.camera.position.set(20, 20, 20);
-
-        // Setup orbit controls
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
-        this.controls.enableRotate = true;  // Enable rotation
-        this.controls.enablePan = true;  // Enable panning
-        this.controls.target.set(0, 0, 0);
-        this.controls.enableDamping = true;
-
-        // Add resize and click event listeners
         window.addEventListener('resize', this.onWindowResize, false);
         window.addEventListener('click', this.onClick, false);
         window.addEventListener('mousemove', this.onMouseMove, false);
         window.addEventListener('dblclick', this.onDoubleClick, false);
 
-        const htmlTooltip = document.querySelector("div#tooltip");
-
-        if(!htmlTooltip || !(htmlTooltip instanceof HTMLDivElement)) {
-            throw new Error("Tooltip element not found")
-        }
-
-        this.htmlTooltip = htmlTooltip;
-        this.updateHtmlTooltipContent();
+        this.htmlTooltip = getHtmlTooltip();
+        setInterval(() => updateHtmlTooltipContent(this.htmlTooltip), TOOLTIP_UPDATE_INTERVAL_MS);
 
         this.mainPlane = this.addPlane();
         this.addObjects();
         this.animate();
     }
 
+    setupControls() {
+        const controls = new OrbitControls(this.camera, this.renderer.domElement);
+        controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
+        controls.enableRotate = true;
+        controls.enablePan = true;
+        controls.target.set(0, 0, 0);
+        controls.enableDamping = true;
+
+        return controls;
+    }
+
     findCursorIntersectingObjects() {
-        return  this.raycaster
+        return this.raycaster
             .intersectObjects(this.scene.children, true)
             .filter((int) => int.object !== this.mainPlane);
     }
@@ -99,19 +98,12 @@ export class SceneController {
             this.tooltippedObject = this.mousePointedObject;
         }
 
-        const intersects = this.findCursorIntersectingObjects()
-
-        // If we have an intersection
-        if (intersects.length > 0) {
-            const closestObject = intersects[0].object;
-    
-            // Create a new desired camera position: a bit offset from the object's position
-            const {x, y, z} = new THREE.Vector3().copy(closestObject.position).add(new THREE.Vector3(0, 5, 10));
+        if(this.mousePointedObject) {
+            const {x, y, z} = new THREE.Vector3().copy(this.mousePointedObject.position).add(new THREE.Vector3(0, 5, 10));
             
-            gsap.to(this.camera.position, {x, y, z, duration: 3});
-            gsap.to(this.controls.target, {...closestObject.position, duration: 3});
+            gsap.to(this.camera.position, {x, y, z, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+            gsap.to(this.controls.target, {...this.mousePointedObject.position, duration: 3});
             
-            // Update the controls
             this.controls.update();
         }
 
@@ -121,30 +113,15 @@ export class SceneController {
     onDoubleClick = (event: MouseEvent) => {
         event.preventDefault();
     
-        // Update the picking ray with the camera and mouse position
-        this.raycaster.setFromCamera(this.mouse, this.camera);
-    
-        // Calculate objects intersecting the picking ray, excluding the main plane
-        const intersects = this.findCursorIntersectingObjects()
-
-        
-        if(!intersects.length) {
-            // default position
-            const defPos = {x: 20, y: 20, z: 20};
-            gsap.to(this.camera.position, {...defPos, duration: 3});
+        if(!this.mousePointedObject) {
+            gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
         }
     };
-    
 
     onWindowResize = () => {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
-    }
-
-    panCameraTo = (object: THREE.Object3D) => {
-        // Implementing smooth panning to the object
-        // ...
     }
 
     animate = () => {
@@ -167,14 +144,22 @@ export class SceneController {
             this.htmlTooltip.style.top = `${vector.y - offsetY}px`;
         }
 
+        this.highlightPointedAnnotation();
+    };
+
+    highlightPointedAnnotation() {
         if (this.mousePointedObject?.userData.isAnnotation && this.mousePointedObject instanceof THREE.Sprite) {
             this.mousePointedObject.material.color.set(0x0000ff);
-        } else if (this.mousePointedObject?.userData.annotationSprite) {
-            this.mousePointedObject.userData.annotationSprite.material.color.set(0x0000ff);
-        } else {
-            this.annotationSprites.forEach(s => s.material.color.set(0xffffff));
+            return;
         }
-    };
+        
+        if (this.mousePointedObject?.userData.annotationSprite) {
+            this.mousePointedObject.userData.annotationSprite.material.color.set(0x0000ff);
+            return;
+        }
+
+        this.annotationSprites.forEach(s => s.material.color.set(0xffffff));
+    }
 
     addObjects = () => {
         SCENE_OBJECTS.forEach(obj => {
@@ -220,67 +205,20 @@ export class SceneController {
         // Update the picking ray with the camera and mouse position
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
-        // Calculate objects intersecting the picking ray, excluding the main pane
         const intersects = this.findCursorIntersectingObjects()
 
         this.mousePointedObject = intersects[0]?.object;
     }
 
-    getCamera = () => {
-        return new THREE.PerspectiveCamera(45, this.cameraAspect, 1, 1000)
-    }
+    getCamera = (position: typeof CAMERA_DEFAULT_POSITION) => {
+        const camera = new THREE.PerspectiveCamera(45, this.cameraAspect, 1, 1000)
+        camera.position.set(position.x, position.y, position.z);
 
-    showTooltip = () => {
-        if (!this.mousePointedObject) {
-            return;
-        }
-
-
-        if (this.tooltip) {
-            this.scene.remove(this.tooltip);
-        }
-
-        this.tooltip = new Tooltip(`Temp: ${Math.round(Math.random() * 100)}`);
-        this.tooltip.position.copy(this.mousePointedObject.position).add(new THREE.Vector3(0, this.mousePointedObject.scale.y, 0));
-        this.scene.add(this.tooltip);
-
-        this.tooltippedObject = this.mousePointedObject;
-
-        if (this.tooltipUpdateInterval) {
-            clearInterval(this.tooltipUpdateInterval);
-        }
-
-        this.tooltipUpdateInterval = setInterval(() => {
-            this.tooltip?.setText(`Temp: ${Math.round(Math.random() * 100)}`);
-        }, 1000);
+        return camera;
     }
 
     showHtmlTooltip = () => {
         this.htmlTooltip.hidden = false;
     }
 
-    updateHtmlTooltipContent() {
-        if (!this.htmlTooltip) {
-            return;
-        }
-
-        const tooltip = this.htmlTooltip;
-
-        const cb = () => {
-            [
-                [tooltip.querySelector('#tooltipEnergyMetric'), 10],
-                [tooltip.querySelector('#tooltipHeatMetric'), 5],
-                [tooltip.querySelector('#tooltipSteamMetric'), 1],
-            ].forEach(payload => {
-                const el = payload[0];
-                if (!el) return;
-
-                const multiplier = payload[1] as number;
-
-                (el as Element).innerHTML = Math.floor(Math.random() * 1000 * multiplier).toString();
-            })
-        }
-
-        setInterval(cb, 1000);
-    }
 }
