@@ -169,6 +169,8 @@ export class SceneController {
 
         if (this.mousePointedObject?.userData.isAnnotation && this.mousePointedObject instanceof THREE.Sprite) {
             this.mousePointedObject.material.color.set(0x0000ff);
+        } else if (this.mousePointedObject?.userData.annotationSprite) {
+            this.mousePointedObject.userData.annotationSprite.material.color.set(0x0000ff);
         } else {
             this.annotationSprites.forEach(s => s.material.color.set(0xffffff));
         }
