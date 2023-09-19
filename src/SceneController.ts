@@ -32,6 +32,8 @@ export class SceneController {
     htmlTooltipSrc: string = 'Error loading tooltip';
     htmlTooltipUpdateInterval: number | null = null;
 
+    annotationSprites: THREE.Sprite[] = [];
+
     constructor() {
         // Create scene
         this.scene = new THREE.Scene();
@@ -164,6 +166,12 @@ export class SceneController {
             this.htmlTooltip.style.left = `${vector.x - offsetx}px`;
             this.htmlTooltip.style.top = `${vector.y - offsetY}px`;
         }
+
+        if (this.mousePointedObject?.userData.isAnnotation && this.mousePointedObject instanceof THREE.Sprite) {
+            this.mousePointedObject.material.color.set(0x0000ff);
+        } else {
+            this.annotationSprites.forEach(s => s.material.color.set(0xffffff));
+        }
     };
 
     addObjects = () => {
@@ -176,6 +184,16 @@ export class SceneController {
             cube.position.setZ(obj.zPos)
 
             this.scene.add(cube);
+
+            const annotationSprite = this.objectController.generateAnnotationTexture(1);
+
+            annotationSprite.position.set(0, cube.geometry.parameters.height / 2, 0);
+            annotationSprite.scale.set(1, 1, 1);
+    
+            cube.add(annotationSprite);
+            cube.userData.annotationSprite = annotationSprite;
+            annotationSprite.userData.isAnnotation = true;
+            this.annotationSprites.push(annotationSprite)
         });
     }
 
