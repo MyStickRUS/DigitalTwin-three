@@ -69,6 +69,7 @@ export class SceneController {
 
         this.objectController.addFactory(this.scene);
         this.objectController.addBoundingBoxes(this.scene);
+        this.objectController.generateAnnotation(this.scene)
         this.animate();
 
         if(this.debug) {
@@ -96,7 +97,9 @@ export class SceneController {
         event.preventDefault();
     
         const closestIntersection = this.raycaster.intersectObjects(this.scene.children.filter(obj => obj.userData.isClickable))[0]
-        console.log(closestIntersection)
+        console.log('intersection object', closestIntersection)
+        console.log('object userdata', closestIntersection?.object?.userData)
+        console.log('point', closestIntersection?.point)
     
         if(!this.mousePointedObject) {
             return
@@ -104,10 +107,7 @@ export class SceneController {
         
         this.tooltippedObject = this.mousePointedObject;
     
-        let offset = new THREE.Vector3(0, 5, 0);  // adjust as necessary to get the desired view
         if (closestIntersection) {
-            debugger;
-
             // const worldPosition = new THREE.Vector3();
             // closestObject.getWorldPosition(worldPosition);
             // console.log(worldPosition)
