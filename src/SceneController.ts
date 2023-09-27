@@ -43,6 +43,7 @@ export class SceneController {
         // Create scene
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xfafafa);
+        this.scene.add( new THREE.AmbientLight( 0x404040, 2 ) );
 
         // Initialize ObjectController
         this.objectController = new ObjectController();
