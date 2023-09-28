@@ -1,18 +1,17 @@
 import * as THREE from "three";
-import { GUI, GUIController } from "dat.gui";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export type SceneObject = {
     fileName: string;
     cameraPosition: Coordinates;
-    annotation: Coordinates & {type: color};
-    data: { [K: string]: foo | bar };
+    annotation: Coordinates & {type: FacilityStatus};
+    data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic };
     displayName: string;
 };
 
-export type foo = [number | string, color];
+export type FacilityDataStatic = [number | string, FacilityStatus];
 
-type color = "red" | "yellow" | "green" | "orange";
+type FacilityStatus = "red" | "yellow" | "green" | "orange";
 
 /**
  * initialValue
@@ -25,7 +24,7 @@ type color = "red" | "yellow" | "green" | "orange";
  *
  * updateSeconds
  */
-export type bar = [number | string, color, number, number, number];
+export type FacilityBoxDataDynamic = [number | string, FacilityStatus, number, number, number];
 
 interface Coordinates {
     x: number;
@@ -298,24 +297,24 @@ const BOUNDING_BOXES: SceneObject[] = [
 export class ObjectController {
     generateAnnotations() {
         BOUNDING_BOXES.forEach((box) => {
-            const cls = box.annotation.type
+            const cls = box.annotation.type;
 
-            const div = document.createElement('div')
-            div.classList.add('annotation')
+            const div = document.createElement("div");
+            div.classList.add("annotation");
             div.classList.add(cls);
             div.id = `${box.fileName}-annotation`;
 
-            if(cls === 'red') {
-                const span = document.createElement('span');
-                span.style.display = 'flex';
-                span.style.justifyContent = 'center';
+            if (cls === "red") {
+                const span = document.createElement("span");
+                span.style.display = "flex";
+                span.style.justifyContent = "center";
 
-                span.innerText = '!';
+                span.innerText = "!";
                 div.appendChild(span);
             }
 
             document.body.appendChild(div);
-        })
+        });
     }
 
     addFactory(scene: THREE.Scene) {
@@ -325,9 +324,33 @@ export class ObjectController {
             `Zavod.glb`,
             (gltf) => {
                 const model = gltf.scene;
+                console.log(gltf.scene);
                 model.position.set(0, 0, 0);
                 model.userData.isClickable = false;
                 scene.add(model);
+
+                // Animation handling
+                if (gltf.animations && gltf.animations.length) {
+                    const mixer = new THREE.AnimationMixer(model);
+                    for (let i = 0; i < gltf.animations.length; i++) {
+                        const animation = gltf.animations[i];
+                        mixer.clipAction(animation).play();
+                    }
+
+                    // Update the mixer on every frame
+                    const clock = new THREE.Clock();
+                    scene.userData.animationMixers = scene.userData.animationMixers || [];
+                    scene.userData.animationMixers.push(mixer);
+                    function animate() {
+                        requestAnimationFrame(animate);
+                        const delta = clock.getDelta();
+                        for (const mixer of scene.userData.animationMixers) {
+                            mixer.update(delta);
+                        }
+                        // ... your render function here ...
+                    }
+                    animate();
+                }
             },
             undefined,
             (error) => console.error("An error occurred while loading the model:", error)
@@ -344,7 +367,6 @@ export class ObjectController {
                 obj.fileName,
                 (gltf) => {
                     const model = gltf.scene;
-                    // model.position.set(obj.xPos, 0, obj.zPos);
                     model.position.set(0, 0, 0);
                     model.userData.isClickable = true;
                     Object.assign(model.userData, obj);

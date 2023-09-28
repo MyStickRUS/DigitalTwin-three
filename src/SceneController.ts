@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
 import gsap from 'gsap';
-import { generateTooltipTable, getHtmlTooltip, updateHtmlTooltipContent } from './Tooltip';
+import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
 
 const IS_DEBUG = true;
@@ -14,7 +14,6 @@ const CAMERA_DEFAULT_POSITION = {
 
 const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
-const TOOLTIP_UPDATE_INTERVAL_MS = 1000;
 export class SceneController {
     debug = IS_DEBUG;
     scene: THREE.Scene;
@@ -71,7 +70,6 @@ export class SceneController {
         window.addEventListener('dblclick', this.onDoubleClick, false);
 
         this.htmlTooltip = getHtmlTooltip();
-        setInterval(() => updateHtmlTooltipContent(this.htmlTooltip), TOOLTIP_UPDATE_INTERVAL_MS);
 
         this.objectController.addFactory(this.scene);
         this.boundingBoxes = this.objectController.addBoundingBoxes(this.scene);

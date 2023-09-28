@@ -1,17 +1,4 @@
-import { bar, foo } from "./ObjectController";
-
-export function updateHtmlTooltipContent(tooltip: HTMLDivElement) {
-    // [
-    //     [tooltip.querySelector('#tooltipEnergyMetric'), 10],
-    //     [tooltip.querySelector('#tooltipHeatMetric'), 5],
-    //     [tooltip.querySelector('#tooltipSteamMetric'), 1],
-    // ].forEach(payload => {
-    //     const el = payload[0];
-    //     if (!el) return;
-    //     const multiplier = payload[1] as number;
-    //     (el as Element).innerHTML = Math.floor(Math.random() * 1000 * multiplier).toString();
-    // })
-}
+import { FacilityBoxDataDynamic, FacilityDataStatic } from "./ObjectController";
 
 export function getHtmlTooltip() {
     const htmlTooltip = document.querySelector("div#tooltip");
@@ -23,7 +10,7 @@ export function getHtmlTooltip() {
     return htmlTooltip;
 }
 
-export function generateTooltipTable(displayName: string, data: { [K: string]: foo | bar }): [HTMLDivElement, number[]] {
+export function generateTooltipTable(displayName: string, data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic }): [HTMLDivElement, number[]] {
     console.log(displayName);
     const wrapper = document.createElement("div");
 
