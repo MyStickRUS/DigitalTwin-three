@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
 import gsap from 'gsap';
-import { getHtmlTooltip, updateHtmlTooltipContent } from './Tooltip';
+import { generateTooltipTable, getHtmlTooltip, updateHtmlTooltipContent } from './Tooltip';
 import { GUI } from 'dat.gui';
 
 const CAMERA_DEFAULT_POSITION = {
@@ -35,7 +35,7 @@ export class SceneController {
 
     htmlTooltip: HTMLDivElement;
     htmlTooltipSrc: string = 'Error loading tooltip';
-    htmlTooltipUpdateInterval: number | null = null;
+    htmlTooltipUpdateIntervals: number[] = [];
 
     annotationSprites: THREE.Sprite[] = [];
 
@@ -98,9 +98,9 @@ export class SceneController {
         event.preventDefault();
     
         const closestIntersection = this.raycaster.intersectObjects(this.scene.children.filter(obj => obj.userData.isClickable))[0]
-        console.log('intersection object', closestIntersection)
-        console.log('object userdata', closestIntersection?.object?.userData)
-        console.log('point', closestIntersection?.point)
+        closestIntersection && console.log('intersection object', closestIntersection)
+        closestIntersection?.object?.userData && console.log('object userdata', closestIntersection?.object?.userData)
+        closestIntersection?.point && console.log('point', closestIntersection?.point)
     
         if(!this.mousePointedObject) {
             return
@@ -109,11 +109,6 @@ export class SceneController {
         this.tooltippedObject = this.mousePointedObject;
     
         if (closestIntersection) {
-            // const worldPosition = new THREE.Vector3();
-            // closestObject.getWorldPosition(worldPosition);
-            // console.log(worldPosition)
-            // this.camera.lookAt(worldPosition);
-            // closestObject.removeFromParent()
             gsap.to(this.camera.position, {
                 x: closestIntersection.object.parent?.userData.cameraPosition.x,
                 y: closestIntersection.object.parent?.userData.cameraPosition.y,
@@ -130,25 +125,23 @@ export class SceneController {
             });
         }
 
+        debugger;
+        if (closestIntersection && closestIntersection.object?.parent?.userData?.data) {
+            const {displayName, data } = closestIntersection.object?.parent?.userData;
+            this.updateTooltipWithTableData(displayName, data);
+            this.showHtmlTooltip();
+        }
+
         this.controls.update();
-        this.showHtmlTooltip();
     };
     
 
     addCameraControl() {
         const gui = new GUI();
-        const folder = gui.addFolder('Camera controls');
 
         gui.add( this.camera.position , 'x', -50, 50 ).step(0.5).listen()
-        // .onChange(val => this.camera.position.setX(val))
         gui.add( this.camera.position , 'y', 0, 50 ).step(0.5).listen()
-        // .onChange(val => this.camera.position.setY(val))
         gui.add( this.camera.position , 'z', -50, 50 ).step(0.5).listen()
-        // .onChange(val => this.camera.position.setZ(val))
-
-        // folder.add(this.camera.position, 'x').listen().onChange(value => {
-        //     this.camera.position.x = value;
-        // });
     }
 
     onDoubleClick = (event: MouseEvent) => {
@@ -158,7 +151,6 @@ export class SceneController {
             this.hideHtmlTooltip();
 
             gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
-            // this.controls.target = this.scene.position
             // TODO:
             return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
         }
@@ -175,20 +167,20 @@ export class SceneController {
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
 
-        if (this.tooltippedObject) {
-            let vector = new THREE.Vector3();
-            vector.setFromMatrixPosition(this.tooltippedObject.matrixWorld);
-            vector.project(this.camera);
+        // if (this.tooltippedObject) {
+        //     let vector = new THREE.Vector3();
+        //     vector.setFromMatrixPosition(this.tooltippedObject.matrixWorld);
+        //     vector.project(this.camera);
 
-            vector.x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-            vector.y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
+        //     vector.x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+        //     vector.y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
 
-            let offsetx = this.htmlTooltip.offsetWidth / 2;
-            let offsetY = this.htmlTooltip.offsetHeight * 1.5;
+        //     let offsetx = this.htmlTooltip.offsetWidth / 2;
+        //     let offsetY = this.htmlTooltip.offsetHeight * 1.5;
 
-            this.htmlTooltip.style.left = `${vector.x - offsetx}px`;
-            this.htmlTooltip.style.top = `${vector.y - offsetY}px`;
-        }
+        //     this.htmlTooltip.style.left = `${vector.x - offsetx}px`;
+        //     this.htmlTooltip.style.top = `${vector.y - offsetY}px`;
+        // }
 
         this.highlightPointedAnnotation();
     };
@@ -223,7 +215,9 @@ export class SceneController {
     getCamera = (position: typeof CAMERA_DEFAULT_POSITION) => {
         const camera = new THREE.PerspectiveCamera(45, this.cameraAspect, 1, 1000)
         camera.position.set(position.x, position.y, position.z);
+        camera.fov = 35;
 
+        camera.updateProjectionMatrix();
         return camera;
     }
 
@@ -233,6 +227,19 @@ export class SceneController {
 
     hideHtmlTooltip = () => {
         this.htmlTooltip.hidden = true;
+    }
+
+    updateTooltipWithTableData(displayName: string, data: any) {
+        // Clear current tooltip content
+        while (this.htmlTooltip.firstChild) {
+            this.htmlTooltip.removeChild(this.htmlTooltip.firstChild);
+        }
+    
+        // Add the generated table to the tooltip
+        const [tableElement, updateTimeouts] = generateTooltipTable(displayName, data); 
+        this.htmlTooltip.appendChild(tableElement);
+        this.htmlTooltipUpdateIntervals.forEach(clearInterval);
+        this.htmlTooltipUpdateIntervals = updateTimeouts;
     }
 
 }
