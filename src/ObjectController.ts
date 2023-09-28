@@ -5,7 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 export type SceneObject = {
     fileName: string;
     cameraPosition: Coordinates;
-    annotationPosition: Coordinates;
+    annotation: Coordinates & {type: color};
     data: { [K: string]: foo | bar };
     displayName: string;
 };
@@ -41,7 +41,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 3.5,
             z: 16,
         },
-        annotationPosition: { x: 1.7658803264766725, y: 1.5499998331069982, z: 12.087477606483148 },
+        annotation: { x: 1.7658803264766725, y: 1.5499998331069982, z: 12.087477606483148, type: "green" },
         data: {
             "Срок службы, лет": [23.5, "green"],
             "ИТС, %": [76.4, "green"],
@@ -56,7 +56,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 3.5,
             z: 18.5,
         },
-        annotationPosition: { x: -2.7750866375646144, y: 1.412572919126717, z: 12.202375411987305 },
+        annotation: { x: -2.7750866375646144, y: 1.412572919126717, z: 12.202375411987305, type: "yellow" },
         displayName: "Турбина",
         data: {
             "Срок службы, лет": [27, "yellow"],
@@ -71,7 +71,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 4.5,
             z: 17,
         },
-        annotationPosition: { x: -11.250720977783205, y: 1.8449593975044962, z: 13.014999526387424 },
+        annotation: { x: -11.250720977783205, y: 1.8449593975044962, z: 13.014999526387424, type: 'red' },
         data: {
             "Дебит нефти, тонн/сутки": [15.6, "green", 10, 20, 60 * 60 * 24],
             "Потребление ЭЭ, кВт/ч": [36.5, "green", 20, 50, 60],
@@ -89,7 +89,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 2.5,
             z: 9.5,
         },
-        annotationPosition: { x: -11.72751978706721, y: 1.369999885559082, z: 6.945446020583546 },
+        annotation: { x: -11.72751978706721, y: 1.369999885559082, z: 6.945446020583546, type: "yellow" },
         displayName: "Насосная станция",
         data: {
             Состояние: ["Удовлетворительное", "yellow"],
@@ -106,7 +106,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 9,
             z: 10.5,
         },
-        annotationPosition: { x: -10.903325418032312, y: 2.4440106147665226, z: 1.748719136415069 },
+        annotation: { x: -10.903325418032312, y: 2.4440106147665226, z: 1.748719136415069, type: "red"},
         data: {
             "Вероятность отказа": [0.27, "red"],
             "Последствия отказа, $": [1500000, "red"],
@@ -128,7 +128,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 7,
             z: 0,
         },
-        annotationPosition: { x: -10.190260049842914, y: 2.731184989639609, z: -4.920000076293945 },
+        annotation: { x: -10.190260049842914, y: 2.731184989639609, z: -4.920000076293945, type: "green" },
         displayName: "Трубопровод",
         data: {
             Состояние: ["Хорошее", "green"],
@@ -146,7 +146,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 15,
             z: 2,
         },
-        annotationPosition: { x: -8.887441635131838, y: 8.213585219913078, z: -7.417965260923289 },
+        annotation: { x: -8.887441635131838, y: 8.213585219913078, z: -7.417965260923289, type: "green" },
         displayName: "Трубопровод",
         data: {
             "Вероятность отказа": [0.13, "yellow"],
@@ -161,7 +161,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 7.5,
             z: -2.5,
         },
-        annotationPosition: { x: -8.66512438166719, y: 4.263289826248133, z: -8.393738746643066 },
+        annotation: { x: -8.66512438166719, y: 4.263289826248133, z: -8.393738746643066, type: "green" },
         displayName: "Колонна",
         data: {
             "Вероятность отказа": [0.03, "green"],
@@ -176,7 +176,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 4,
             z: -7.5,
         },
-        annotationPosition: { x: -8.419270338994462, y: 1.600000023841858, z: -12.896779986304836 },
+        annotation: { x: -8.419270338994462, y: 1.600000023841858, z: -12.896779986304836, type: "green" },
         data: {
             "Год выпуска": [2005, "green"],
             "Пробег, км.": [76.834, "green"],
@@ -193,7 +193,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 4.5,
             z: -4.5,
         },
-        annotationPosition: { x: -3.3676969579533154, y: 1.540284932311117, z: -8.035249710083008 },
+        annotation: { x: -3.3676969579533154, y: 1.540284932311117, z: -8.035249710083008, type: "orange"},
         displayName: "КТПН 1",
         data: {
             "ИТС, %": ["45.7", "orange"],
@@ -208,7 +208,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 4.5,
             z: -2.5,
         },
-        annotationPosition: { x: 2.4365751282808965, y: 2.5701724218052178, z: -8.486614227294929 },
+        annotation: { x: 2.4365751282808965, y: 2.5701724218052178, z: -8.486614227294929, type: "green" },
         displayName: "ВЛЭП 6 (10) кВ",
         data: {
             "ИТС, %": [95.6, "green"],
@@ -223,7 +223,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 4,
             z: -5.5,
         },
-        annotationPosition: { x: 8.08342431665805, y: 1.33854403235717, z: -8.035249710083008 },
+        annotation: { x: 8.08342431665805, y: 1.33854403235717, z: -8.035249710083008, type: "red" },
         displayName: "КТПН 2",
         data: {
             "ИТС, %": [24.6, "red"],
@@ -238,7 +238,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 4,
             z: 9.5,
         },
-        annotationPosition: { x: 18.31440051123633, y: 0.9086602403226962, z: 4.3585557937622 },
+        annotation: { x: 18.31440051123633, y: 0.9086602403226962, z: 4.3585557937622, type: "green" },
         displayName: "Электродвигатель",
         data: {
             "Дата ввода в эксплуатацию": ["2/3/2009", "green"],
@@ -257,7 +257,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 6.5,
             z: 0,
         },
-        annotationPosition: { x: 18.015738643135673, y: 3.220761165885927, z: -5.489129066467285 },
+        annotation: { x: 18.015738643135673, y: 3.220761165885927, z: -5.489129066467285, type: "yellow" },
         displayName: "Доменная печь",
         data: {
             "Толщина коррозионных отложений, мм": [4.6, "yellow"],
@@ -271,7 +271,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 6.5,
             z: 2,
         },
-        annotationPosition: { x: 20.70567371746629, y: 0.8496483235902446, z: -6.751444339752197 },
+        annotation: { x: 20.70567371746629, y: 0.8496483235902446, z: -6.751444339752197, type: "red" },
         displayName: "Прокатный стан",
         data: {
             "Частота вращения двигателя, об/мин": [780, "green"],
@@ -286,7 +286,7 @@ const BOUNDING_BOXES: SceneObject[] = [
             y: 2.5,
             z: 6.5,
         },
-        annotationPosition: { x: 3.6088594628314645, y: 1.3102364320540687, z: 3.517393112182617 },
+        annotation: { x: 3.6088594628314645, y: 1.3102364320540687, z: 3.517393112182617, type: "green" },
         displayName: "Силовой трансофрматор 35/6 кВ",
         data: {
             "ИТС, %": [72.7, "green"],
@@ -296,16 +296,26 @@ const BOUNDING_BOXES: SceneObject[] = [
 ];
 
 export class ObjectController {
-    generateAnnotation(scene: THREE.Scene) {
+    generateAnnotations() {
         BOUNDING_BOXES.forEach((box) => {
-            const annotationSprite = generateAnnotationTexture(box.fileName.split(".")[0]);
+            const cls = box.annotation.type
 
-            const { x, y, z } = box.annotationPosition;
-            annotationSprite.position.set(x, y, z);
-            annotationSprite.scale.set(2, 2, 2);
+            const div = document.createElement('div')
+            div.classList.add('annotation')
+            div.classList.add(cls);
+            div.id = `${box.fileName}-annotation`;
 
-            scene.add(annotationSprite);
-        });
+            if(cls === 'red') {
+                const span = document.createElement('span');
+                span.style.display = 'flex';
+                span.style.justifyContent = 'center';
+
+                span.innerText = '!';
+                div.appendChild(span);
+            }
+
+            document.body.appendChild(div);
+        })
     }
 
     addFactory(scene: THREE.Scene) {

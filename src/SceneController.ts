@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { generateTooltipTable, getHtmlTooltip, updateHtmlTooltipContent } from './Tooltip';
 import { GUI } from 'dat.gui';
 
+const IS_DEBUG = true;
 const CAMERA_DEFAULT_POSITION = {
     x: 15,
     y: 27.5,
@@ -15,7 +16,7 @@ const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
 const TOOLTIP_UPDATE_INTERVAL_MS = 1000;
 export class SceneController {
-    debug = true;
+    debug = IS_DEBUG;
     scene: THREE.Scene;
 
     camera: THREE.PerspectiveCamera;
@@ -37,7 +38,11 @@ export class SceneController {
     htmlTooltipSrc: string = 'Error loading tooltip';
     htmlTooltipUpdateIntervals: number[] = [];
 
+    boundingBoxes: any[];
+
     annotationSprites: THREE.Sprite[] = [];
+
+    annotationsRendered = false;
 
     constructor() {
         // Create scene
@@ -69,8 +74,7 @@ export class SceneController {
         setInterval(() => updateHtmlTooltipContent(this.htmlTooltip), TOOLTIP_UPDATE_INTERVAL_MS);
 
         this.objectController.addFactory(this.scene);
-        this.objectController.addBoundingBoxes(this.scene);
-        this.objectController.generateAnnotation(this.scene)
+        this.boundingBoxes = this.objectController.addBoundingBoxes(this.scene);
         this.animate();
 
         if(this.debug) {
@@ -125,7 +129,6 @@ export class SceneController {
             });
         }
 
-        debugger;
         if (closestIntersection && closestIntersection.object?.parent?.userData?.data) {
             const {displayName, data } = closestIntersection.object?.parent?.userData;
             this.updateTooltipWithTableData(displayName, data);
@@ -167,37 +170,13 @@ export class SceneController {
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
 
-        // if (this.tooltippedObject) {
-        //     let vector = new THREE.Vector3();
-        //     vector.setFromMatrixPosition(this.tooltippedObject.matrixWorld);
-        //     vector.project(this.camera);
+        positionAnnotations(this.boundingBoxes, this.camera);
 
-        //     vector.x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-        //     vector.y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
-
-        //     let offsetx = this.htmlTooltip.offsetWidth / 2;
-        //     let offsetY = this.htmlTooltip.offsetHeight * 1.5;
-
-        //     this.htmlTooltip.style.left = `${vector.x - offsetx}px`;
-        //     this.htmlTooltip.style.top = `${vector.y - offsetY}px`;
-        // }
-
-        this.highlightPointedAnnotation();
+        if(!this.annotationsRendered) {
+            this.objectController.generateAnnotations();
+            this.annotationsRendered = true;
+        }
     };
-
-    highlightPointedAnnotation() {
-        if (this.mousePointedObject?.userData.isAnnotation && this.mousePointedObject instanceof THREE.Sprite) {
-            this.mousePointedObject.material.color.set(0x0000ff);
-            return;
-        }
-        
-        if (this.mousePointedObject?.userData.annotationSprite) {
-            this.mousePointedObject.userData.annotationSprite.material.color.set(0x0000ff);
-            return;
-        }
-
-        this.annotationSprites.forEach(s => s.material.color.set(0xffffff));
-    }
 
     onMouseMove = (event: MouseEvent) => {
         event.preventDefault();
@@ -242,4 +221,32 @@ export class SceneController {
         this.htmlTooltipUpdateIntervals = updateTimeouts;
     }
 
+}
+
+function getScreenPosition(object: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+    debugger;
+    var width = window.innerWidth, height = window.innerHeight;
+    var widthHalf = width / 2, heightHalf = height / 2;
+    
+    const {x, y, z} = object.userData.annotation;
+
+    var pos = new THREE.Vector3(x, y, z);
+    pos.project(camera);
+    pos.x = ( pos.x * widthHalf ) + widthHalf;
+    pos.y = -( pos.y * heightHalf ) + heightHalf;
+
+    return pos;
+}
+
+function positionAnnotations(boxes: THREE.Group[], camera: THREE.PerspectiveCamera) {
+    boxes.forEach((box, _index) => {
+        const pos = getScreenPosition(box, camera);
+        const annotation = document.getElementById(`${box.userData.fileName}-annotation`);
+
+        if(!annotation) return;
+
+        annotation.style.left = `${pos.x}px`;
+        annotation.style.top = `${pos.y}px`;
+        annotation.style.display = 'block';
+    });
 }

@@ -34,31 +34,50 @@
       color: #FFFFFF;
       z-index: 1;
     }
+
+    .annotation {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      /* Makes it a circle */
+      display: flex;
+      /* For centering the exclamation mark */
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 18px;
+      border: 2px solid white;
+      /* White outline */
+      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+      /* Optional shadow for better visibility */
+    }
+
+    .annotation.red {
+      background-color: red;
+    }
+
+    .annotation.orange {
+      background-color: orange;
+    }
+
+    .annotation.green {
+      background-color: green;
+    }
+
+    .annotation.yellow {
+      background-color: yellow;
+    }
+
+    .annotation span {
+      color: white;
+    }
   </style>
 </head>
 
 <body>
   <script type="module" src="src/index.ts"></script>
-
-  <div  hidden id="tooltip">
-    <p>Химико-металлургический цех</p>
-    <div class="block">
-      <p class="p0 m0">Энергия</p>
-      <p class="p0 m0" id="tooltipEnergyMetric">6528</p>
-      <p class="p0 m0">Квт/ч</p>
-    </div>
-    <div class="block">
-      <p class="p0 m0">Тепло</p>
-      <p class="p0 m0" id="tooltipHeatMetric">380</p>
-      <p class="p0 m0">Гкал/сут</p>
-    </div>
-    <div class="block">
-      <p class="p0 m0">Пар</p>
-      <p class="p0 m0" id="tooltipSteamMetric">56</p>
-      <p class="p0 m0">тмк/сут</p>
-    </div>
-  </div>
-
+  <div hidden id="tooltip"></div>
 </body>
 
 </html>
