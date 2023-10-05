@@ -50,7 +50,7 @@ export class SceneController {
     constructor() {
         // Create scene
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color('gray');
+        this.scene.background = new THREE.Color('lightgray');
         const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
         this.scene.add( directionalLight );
 
@@ -155,7 +155,6 @@ export class SceneController {
     onDoubleClick = (event: MouseEvent) => {
         event.preventDefault();
 
-        debugger;
         if(this.mousePointedObject && !ObjectController.isObjectBoundingBox(this.mousePointedObject)) {
             this.hideHtmlTooltip();
 
@@ -248,7 +247,7 @@ function getScreenPosition(object: THREE.Object3D, camera: THREE.PerspectiveCame
 }
 
 function positionAnnotations(boxes: THREE.Group[], camera: THREE.PerspectiveCamera) {
-    boxes.forEach((box, _index) => {
+    boxes.forEach(box => {
         const pos = getScreenPosition(box, camera);
         const annotation = document.getElementById(`${box.userData.fileName}-annotation`);
 

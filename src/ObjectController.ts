@@ -3,7 +3,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { BOUNDING_BOXES } from "./objects";
 
 const SCENE_MODEL_FILENAME = "Zavod_v3.glb";
-
+const SCENE_U_ANIMATE_MATERIAL_NAMES = ['Wire', 'Tube'];
+const SCENE_U_ANIMATION_SPEED = 0.005;
 export class ObjectController {
     generateAnnotations() {
         BOUNDING_BOXES.forEach((box) => {
@@ -38,6 +39,7 @@ export class ObjectController {
                 model.position.set(0, 0, 0);
                 model.userData.isClickable = false;
                 scene.add(model);
+                this.animateMaterialsOffset(scene);
 
                 // Animation handling
                 if (gltf.animations && gltf.animations.length) {
@@ -59,6 +61,32 @@ export class ObjectController {
             (error) => console.error("An error occurred while loading the model:", error)
         );
     }
+    private animateMaterialsOffset(object: THREE.Scene) {
+        object.traverse(function(child) {
+            if (child instanceof THREE.Mesh) {
+                if (SCENE_U_ANIMATE_MATERIAL_NAMES.includes(child.material.name)) {
+                    if (child.material.map) {
+                        // Setting the initial offset
+                        child.material.map.offset.set(0, 0);
+    
+                        // Creating an animation
+                        let animateOffset = function() {
+                            child.material.map.offset.x += SCENE_U_ANIMATION_SPEED;
+                            
+                            // Reset offset if it goes beyond 1 for continuous motion
+                            if (child.material.map.offset.x > 1) {
+                                child.material.map.offset.x -= 1;
+                            }
+                            requestAnimationFrame(animateOffset);
+                        };
+    
+                        animateOffset();
+                    }
+                }
+            }
+        });
+    }
+    
 
     addBoundingBoxes(scene: THREE.Scene) {
         const loader = new GLTFLoader();
