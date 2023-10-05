@@ -105,7 +105,6 @@ export class SceneController {
 
     onClick = (event: MouseEvent) => {
         event.preventDefault();
-    
         const closestIntersection = this.raycaster.intersectObjects(this.scene.children.filter(obj => obj.userData.isClickable))[0]
         closestIntersection && console.log('intersection object', closestIntersection)
         closestIntersection?.object?.userData && console.log('object userdata', closestIntersection?.object?.userData)
@@ -155,7 +154,7 @@ export class SceneController {
     onDoubleClick = (event: MouseEvent) => {
         event.preventDefault();
 
-        if(this.mousePointedObject && !ObjectController.isObjectBoundingBox(this.mousePointedObject)) {
+        if(this.mousePointedObject && !this.objectController.isObjectBoundingBox(this.mousePointedObject)) {
             this.hideHtmlTooltip();
 
             gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
@@ -182,7 +181,7 @@ export class SceneController {
         }
 
         const delta = this.clock.getDelta();
-        for (const mixer of this.scene.userData.animationMixers) {
+        for (const mixer of this.scene.userData.animationMixers || []) {
             mixer.update(delta);
         }
     };

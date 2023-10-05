@@ -1,4 +1,4 @@
-import { FacilityBoxDataDynamic, FacilityDataStatic } from "./ObjectController";
+import { FacilityBoxDataDynamic, FacilityDataStatic } from "./objects/index.ts";
 
 export function getHtmlTooltip() {
     const htmlTooltip = document.querySelector("div#tooltip");
@@ -45,13 +45,15 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
         cell1.style.paddingLeft = "5px";
         cell1.style.paddingRight = "20px";
 
-        
         const [valMin, valMax, updateIntervalSec] = [value[2], value[3], value[4]];
         if(!valMin || !valMax || !updateIntervalSec) {
           continue;
         }
 
-        const interval = setInterval(() => {cell2.innerText = getRandomIntInclusive(valMin, valMax)}, updateIntervalSec * 1000)
+        const interval = setInterval(() => {
+            cell2.innerText = getRandomIntInclusive(valMin, valMax)
+            debugger;
+        }, updateIntervalSec * 1000)
         updateIntervals.push(interval);
     }
 

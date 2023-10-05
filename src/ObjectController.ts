@@ -8,14 +8,14 @@ const SCENE_U_ANIMATION_SPEED = 0.005;
 export class ObjectController {
     generateAnnotations() {
         BOUNDING_BOXES.forEach((box) => {
-            const cls = box.annotation.type;
+            const status = box.annotation.type;
 
             const div = document.createElement("div");
             div.classList.add("annotation");
-            div.classList.add(cls);
+            div.classList.add(status);
             div.id = `${box.fileName}-annotation`;
 
-            if (cls === "red") {
+            if (status === "red") {
                 const span = document.createElement("span");
                 span.style.display = "flex";
                 span.style.justifyContent = "center";
@@ -61,6 +61,7 @@ export class ObjectController {
             (error) => console.error("An error occurred while loading the model:", error)
         );
     }
+
     private animateMaterialsOffset(object: THREE.Scene) {
         object.traverse(function(child) {
             if (child instanceof THREE.Mesh) {
@@ -86,7 +87,6 @@ export class ObjectController {
             }
         });
     }
-    
 
     addBoundingBoxes(scene: THREE.Scene) {
         const loader = new GLTFLoader();
@@ -117,7 +117,7 @@ export class ObjectController {
         return res;
     }
 
-    static isObjectBoundingBox(obj: THREE.Object3D): boolean {
+    isObjectBoundingBox(obj: THREE.Object3D): boolean {
         return BOUNDING_BOXES.map(b => b.fileName.split('.')[0]).includes(obj.userData.name);
     }
 }
