@@ -16,6 +16,8 @@ const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
 export class SceneController {
     debug = IS_DEBUG;
+
+    /**THREE.Scene & Partial<{userData?: any[]}> */
     scene: THREE.Scene;
 
     camera: THREE.PerspectiveCamera;
@@ -26,6 +28,8 @@ export class SceneController {
     mouse: THREE.Vector2;
     objectController: ObjectController;
     raycaster: THREE.Raycaster;
+
+    clock: THREE.Clock;
 
     mousePointedObject: THREE.Object3D | null = null;
     tooltippedObject: THREE.Object3D | null = null;
@@ -46,8 +50,9 @@ export class SceneController {
     constructor() {
         // Create scene
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0xfafafa);
-        this.scene.add( new THREE.AmbientLight( 0x404040, 2 ) );
+        this.scene.background = new THREE.Color('gray');
+        const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
+        this.scene.add( directionalLight );
 
         // Initialize ObjectController
         this.objectController = new ObjectController();
@@ -55,6 +60,8 @@ export class SceneController {
         // Initialize raycaster and mouse vector
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
+
+        this.clock = new THREE.Clock();
 
         // Setup renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -71,7 +78,7 @@ export class SceneController {
 
         this.htmlTooltip = getHtmlTooltip();
 
-        this.objectController.addFactory(this.scene);
+        this.objectController.loadGlbFactory(this.scene);
         this.boundingBoxes = this.objectController.addBoundingBoxes(this.scene);
         this.animate();
 
@@ -148,11 +155,11 @@ export class SceneController {
     onDoubleClick = (event: MouseEvent) => {
         event.preventDefault();
 
-        if(!this.mousePointedObject) {
+        debugger;
+        if(this.mousePointedObject && !ObjectController.isObjectBoundingBox(this.mousePointedObject)) {
             this.hideHtmlTooltip();
 
             gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
-            // TODO:
             return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
         }
     };
@@ -173,6 +180,11 @@ export class SceneController {
         if(!this.annotationsRendered) {
             this.objectController.generateAnnotations();
             this.annotationsRendered = true;
+        }
+
+        const delta = this.clock.getDelta();
+        for (const mixer of this.scene.userData.animationMixers) {
+            mixer.update(delta);
         }
     };
 
@@ -222,7 +234,6 @@ export class SceneController {
 }
 
 function getScreenPosition(object: THREE.Object3D, camera: THREE.PerspectiveCamera) {
-    debugger;
     var width = window.innerWidth, height = window.innerHeight;
     var widthHalf = width / 2, heightHalf = height / 2;
     
