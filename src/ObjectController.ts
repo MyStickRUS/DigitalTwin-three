@@ -4,7 +4,7 @@ import { BOUNDING_BOXES } from "./objects";
 
 const SCENE_MODEL_FILENAME = "Zavod_v3.glb";
 const SCENE_U_ANIMATE_MATERIAL_NAMES = ['Wire', 'Tube'];
-const SCENE_U_ANIMATION_SPEED = 0.005;
+const SCENE_U_ANIMATION_SPEED = 0.01;
 export class ObjectController {
     generateAnnotations() {
         BOUNDING_BOXES.forEach((box) => {
@@ -91,7 +91,7 @@ export class ObjectController {
     addBoundingBoxes(scene: THREE.Scene) {
         const loader = new GLTFLoader();
         const res: THREE.Group[] = [];
-        const transparentMaterial = new THREE.MeshStandardMaterial({ color: "black", opacity: 0.1, transparent: true });
+        const transparentMaterial = new THREE.MeshStandardMaterial({ color: "black", opacity: 0.0, transparent: true });
 
         BOUNDING_BOXES.forEach((obj) => {
             loader.load(

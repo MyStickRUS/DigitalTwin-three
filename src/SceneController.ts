@@ -52,6 +52,8 @@ export class SceneController {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color('lightgray');
         const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
+        directionalLight.position.set (-1, 1, 1);
+        directionalLight.castShadow = true;
         this.scene.add( directionalLight );
 
         // Initialize ObjectController
@@ -65,6 +67,7 @@ export class SceneController {
 
         // Setup renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
 
