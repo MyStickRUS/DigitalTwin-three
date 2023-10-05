@@ -4,6 +4,8 @@ import { ObjectController } from './ObjectController';
 import gsap from 'gsap';
 import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
+import { Loader } from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const IS_DEBUG = true;
 const CAMERA_DEFAULT_POSITION = {
@@ -47,14 +49,34 @@ export class SceneController {
 
     annotationsRendered = false;
 
+
+
     constructor() {
         // Create scene
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color('lightgray');
+        
+        // Add Light
         const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
-        directionalLight.position.set (-1, 1, 1);
+        directionalLight.position.set (-10, 10, 10);
         directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize = new THREE.Vector2(1024 * 2, 1024 * 2);
+
+        // directionalLight.shadow.mapSize.width = 512;
+        // directionalLight.shadow.mapSize.height = 512;
+        directionalLight.shadow.camera.near = 0.5; // default
+        directionalLight.shadow.camera.far = 500; // default
         this.scene.add( directionalLight );
+
+        
+
+        //Set Envmap
+        const textureLoader = new THREE.TextureLoader();
+		const textureEquirec = textureLoader.load( 'public/3 Point Beige.png' );
+		textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
+		textureEquirec.colorSpace = THREE.SRGBColorSpace;
+
+        this.scene.environment = textureEquirec;
 
         // Initialize ObjectController
         this.objectController = new ObjectController();
@@ -69,6 +91,8 @@ export class SceneController {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
         document.body.appendChild(this.renderer.domElement);
 
         this.camera = this.getCamera(CAMERA_DEFAULT_POSITION)
@@ -82,6 +106,7 @@ export class SceneController {
         this.htmlTooltip = getHtmlTooltip();
 
         this.objectController.loadGlbFactory(this.scene);
+
         this.boundingBoxes = this.objectController.addBoundingBoxes(this.scene);
         this.animate();
 

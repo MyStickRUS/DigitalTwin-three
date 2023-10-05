@@ -38,6 +38,16 @@ export class ObjectController {
                 console.log(gltf.scene);
                 model.position.set(0, 0, 0);
                 model.userData.isClickable = false;
+                
+                //Shadows enable
+                gltf.scene.traverse ( function ( child )
+                    {
+                        if ( child.isMesh )
+                        {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                        }
+                    });
                 scene.add(model);
                 this.animateMaterialsOffset(scene);
 
