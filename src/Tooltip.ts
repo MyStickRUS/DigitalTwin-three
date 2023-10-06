@@ -28,6 +28,7 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
     wrapper.appendChild(firstRow);
 
     const table = document.createElement("table");
+    table.style.width = "100%";
     wrapper.appendChild(table);
 
     let i = 1;
