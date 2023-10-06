@@ -4,6 +4,7 @@ import { ObjectController } from './ObjectController';
 import gsap from 'gsap';
 import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
+import { getAnnotationScreenPosition } from './Utils';
 
 const IS_DEBUG = false;
 const CAMERA_DEFAULT_POSITION = {
@@ -140,7 +141,7 @@ export class SceneController {
             .intersectObjects(this.scene.children, true)
     }
 
-    onClick = (event: MouseEvent) => {
+    onClick = (event: MouseEvent | TouchEvent) => {
         event.preventDefault();
         const closestIntersection = this.raycaster.intersectObjects(this.scene.children.filter(obj => obj.userData.isClickable))[0]
         closestIntersection && console.log('intersection object', closestIntersection)
@@ -150,8 +151,9 @@ export class SceneController {
         if(!this.mousePointedObject) {
             return
         }
-        
+
         this.tooltippedObject = this.mousePointedObject;
+        console.log(this.tooltippedObject)
     
         if (closestIntersection) {
             gsap.to(this.camera.position, {
@@ -210,7 +212,8 @@ export class SceneController {
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
 
-        positionAnnotations(this.boundingBoxes, this.camera);
+        this.positionAnnotations();
+        this.positionTable()
 
         if(!this.annotationsRendered) {
             this.objectController.generateAnnotations();
@@ -266,31 +269,29 @@ export class SceneController {
         this.htmlTooltipUpdateIntervals = updateTimeouts;
     }
 
-}
+    private positionTable() {
+        if(!this.tooltippedObject) {
+            return;
+        }
 
-function getScreenPosition(object: THREE.Object3D, camera: THREE.PerspectiveCamera) {
-    var width = window.innerWidth, height = window.innerHeight;
-    var widthHalf = width / 2, heightHalf = height / 2;
+        const pos = getAnnotationScreenPosition(this.tooltippedObject, this.camera)
+        if(pos) {
+            this.htmlTooltip.style.left = `${pos.x-10}px`;
+            this.htmlTooltip.style.top = `${pos.y-5}px`;
+        }
+    }
+
+    private positionAnnotations() {
+        this.boundingBoxes.forEach(box => {
+            const pos = getAnnotationScreenPosition(box, this.camera);
+            const annotation = document.getElementById(`${box.userData.fileName}-annotation`);
     
-    const {x, y, z} = object.userData.annotation;
-
-    var pos = new THREE.Vector3(x, y, z);
-    pos.project(camera);
-    pos.x = ( pos.x * widthHalf ) + widthHalf;
-    pos.y = -( pos.y * heightHalf ) + heightHalf;
-
-    return pos;
+            if(!annotation || !pos) return;
+    
+            annotation.style.left = `${pos.x}px`;
+            annotation.style.top = `${pos.y}px`;
+            annotation.style.display = 'block';
+        });
+    }
 }
 
-function positionAnnotations(boxes: THREE.Group[], camera: THREE.PerspectiveCamera) {
-    boxes.forEach(box => {
-        const pos = getScreenPosition(box, camera);
-        const annotation = document.getElementById(`${box.userData.fileName}-annotation`);
-
-        if(!annotation) return;
-
-        annotation.style.left = `${pos.x}px`;
-        annotation.style.top = `${pos.y}px`;
-        annotation.style.display = 'block';
-    });
-}

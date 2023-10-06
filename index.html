@@ -4,75 +4,7 @@
   <meta charset="UTF-8">
   <title>3D Interactive Scene</title>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    .block {
-      display: inline-block;
-      padding-right: 1em;
-    }
-
-    .p0 {
-      padding: 0;
-    }
-
-    .m0 {
-      margin: 0;
-    }
-
-    #tooltip {
-      font-size: 0.7rem;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: fit-content;
-      height: fit-content;
-      background-color: #000000CC;
-      color: #FFFFFF;
-      z-index: 1;
-    }
-
-    .annotation {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      /* Makes it a circle */
-      display: flex;
-      /* For centering the exclamation mark */
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      font-size: 18px;
-      border: 2px solid white;
-      /* White outline */
-      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
-      /* Optional shadow for better visibility */
-    }
-
-    .annotation.red {
-      background-color: red;
-    }
-
-    .annotation.orange {
-      background-color: orange;
-    }
-
-    .annotation.green {
-      background-color: green;
-    }
-
-    .annotation.yellow {
-      background-color: yellow;
-    }
-
-    .annotation span {
-      color: white;
-    }
-  </style>
+  <link href="src/style.css" rel="stylesheet">
 </head>
 
 <body>

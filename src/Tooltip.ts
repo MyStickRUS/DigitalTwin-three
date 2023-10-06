@@ -17,9 +17,14 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
     const updateIntervals = [];
 
     const firstRow = document.createElement("p");
-    firstRow.innerText = displayName;
-    firstRow.style.textAlign = "center";
-    firstRow.style.margin = "0";
+    firstRow.style.display = "flex";
+    firstRow.style.margin = "auto";
+    firstRow.style.height = "2rem";
+    
+    const span = document.createElement('span');
+    span.innerText = displayName;
+    span.style.margin = 'auto';
+    firstRow.appendChild(span)
     wrapper.appendChild(firstRow);
 
     const table = document.createElement("table");

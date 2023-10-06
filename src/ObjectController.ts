@@ -12,13 +12,13 @@ export class ObjectController {
 
             const div = document.createElement("div");
             div.classList.add("annotation");
+            div.classList.add("m-auto");
+            div.classList.add("d-flex");
             div.classList.add(status);
             div.id = `${box.fileName}-annotation`;
 
             if (status === "red") {
                 const span = document.createElement("span");
-                span.style.display = "flex";
-                span.style.justifyContent = "center";
 
                 span.innerText = "!";
                 div.appendChild(span);
