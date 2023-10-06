@@ -4,8 +4,6 @@ import { ObjectController } from './ObjectController';
 import gsap from 'gsap';
 import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
-import { Loader } from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const IS_DEBUG = false;
 const CAMERA_DEFAULT_POSITION = {
@@ -59,7 +57,9 @@ export class SceneController {
         // Add Light
         const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
         directionalLight.position.set (-10, 10, 10);
-        directionalLight.castShadow = true;
+        if(this.debug) {
+            directionalLight.castShadow = true;
+        }
 
         // directionalLight.shadow.mapSize = new THREE.Vector2(1024 * 2, 1024 * 2);
         // directionalLight.shadow.camera.top = 4;
@@ -74,17 +74,16 @@ export class SceneController {
         this.scene.add( directionalLight );
         
         //Helper 
-        var shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
-        this.scene.add( shadowHelper );
-        
-
-        
+        if(this.debug) {
+            var shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
+            this.scene.add( shadowHelper );
+        }
 
         //Set Envmap
         const textureLoader = new THREE.TextureLoader();
-		const textureEquirec = textureLoader.load( 'public/3 Point Beige.png' );
-		textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
-		textureEquirec.colorSpace = THREE.SRGBColorSpace;
+        const textureEquirec = textureLoader.load( '3 Point Beige.png' );
+        textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
+        textureEquirec.colorSpace = THREE.SRGBColorSpace;
 
         this.scene.environment = textureEquirec;
 
