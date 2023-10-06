@@ -60,6 +60,7 @@ export class SceneController {
         const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
         directionalLight.position.set (-10, 10, 10);
         directionalLight.castShadow = true;
+
         // directionalLight.shadow.mapSize = new THREE.Vector2(1024 * 2, 1024 * 2);
         // directionalLight.shadow.camera.top = 4;
         // directionalLight.shadow.camera.bottom = - 4;
@@ -71,7 +72,8 @@ export class SceneController {
         // directionalLight.shadow.camera.far = 500; // default
 
         this.scene.add( directionalLight );
-
+        
+        //Helper 
         var shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
         this.scene.add( shadowHelper );
         
