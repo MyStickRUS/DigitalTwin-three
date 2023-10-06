@@ -7,7 +7,7 @@ import { GUI } from 'dat.gui';
 import { Loader } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-const IS_DEBUG = true;
+const IS_DEBUG = false;
 const CAMERA_DEFAULT_POSITION = {
     x: 15,
     y: 27.5,
