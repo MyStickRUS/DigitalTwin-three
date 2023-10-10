@@ -132,6 +132,7 @@ export class SceneController {
         controls.enablePan = true;
         controls.target.set(0, 0, 0);
         controls.enableDamping = true;
+        controls.maxPolarAngle = Math.PI / 2 - 0.15
 
         return controls;
     }
