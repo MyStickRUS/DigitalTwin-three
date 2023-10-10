@@ -13,6 +13,7 @@ const CAMERA_INITIAL_POSITION = {
     y: 6.5,
     z: 7.5
 }
+const LIGHT_MAP_SIZE = 8192;
 
 const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
@@ -65,8 +66,8 @@ export class SceneController {
         // directionalLight.shadow.camera.bottom = - 4;
         // directionalLight.shadow.camera.left = - 4;
         // directionalLight.shadow.camera.right = 4;
-        // directionalLight.shadow.mapSize.width = 512;
-        // directionalLight.shadow.mapSize.height = 512;
+        directionalLight.shadow.mapSize.width = LIGHT_MAP_SIZE;
+        directionalLight.shadow.mapSize.height = LIGHT_MAP_SIZE;
         // directionalLight.shadow.camera.near = 0.5; // default
         // directionalLight.shadow.camera.far = 500; // default
 
