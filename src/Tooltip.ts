@@ -17,13 +17,12 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
     const updateIntervals = [];
 
     const firstRow = document.createElement("p");
-    firstRow.style.display = "flex";
-    firstRow.style.margin = "auto";
-    firstRow.style.height = "2rem";
-    
+    firstRow.classList.add('tooltip-header-row')
+
     const span = document.createElement('span');
     span.innerText = displayName;
     span.style.margin = 'auto';
+    span.classList.add('tooltip-header-span')
     firstRow.appendChild(span)
     wrapper.appendChild(firstRow);
 
@@ -35,21 +34,25 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
     for (const [key, value] of Object.entries(data)) {
         const row = table.insertRow();
 
-        row.style.backgroundColor = i % 2 === 0 ? "gray" : "black";
+        row.style.backgroundColor = i % 2 === 0 ? "#666666" : "black";
         i++;
 
         const cell1 = row.insertCell(0);
-        const cell2 = row.insertCell(1);
+        const spacer = row.insertCell(1)
+        const cell2 = row.insertCell(2);
         cell1.textContent = key;
         cell2.textContent = formatValue(value[0]);
-        cell2.style.color = value[1];
+        cell2.style.color = getCellColor(value[1]);
+        cell1.classList.add('tooltip-cell-left')
+        cell2.classList.add('tooltip-cell-right')
+        spacer.classList.add('tooltip-spacer');
 
-        cell2.style.fontWeight = "bold";
-        cell2.style.textAlign = "center";
-        cell2.style.paddingLeft = "15px";
-        cell2.style.paddingRight = "15px";
-        cell1.style.paddingLeft = "5px";
-        cell1.style.paddingRight = "20px";
+        // cell2.style.fontWeight = "bold";
+        // cell2.style.textAlign = "center";
+        // cell2.style.paddingLeft = "15px";
+        // cell2.style.paddingRight = "15px";
+        // cell1.style.paddingLeft = "5px";
+        // cell1.style.paddingRight = "20px";
 
         const [valMin, valMax, updateIntervalSec] = [value[2], value[3], value[4]];
         if(!valMin || !valMax || !updateIntervalSec) {
@@ -68,6 +71,18 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
 function formatValue(val: string | number) {
     // TODO: formatting?
     return String(val);
+}
+
+function getCellColor(color: FacilityDataStatic[1]) {
+    switch(color) {
+        case "green":
+            return '#29FF00'
+        case "orange":
+        case "yellow":
+            return '#ECE21E'
+        case "red":
+            return '#FF0000'
+    }
 }
 
 function getRandomIntInclusive(min: number, max: number): string {

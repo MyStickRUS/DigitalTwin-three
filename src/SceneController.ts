@@ -58,9 +58,7 @@ export class SceneController {
         // Add Light
         const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
         directionalLight.position.set (-10, 10, 10);
-        if(IS_DEBUG) {
-            directionalLight.castShadow = true;
-        }
+        directionalLight.castShadow = true;
 
         // directionalLight.shadow.mapSize = new THREE.Vector2(1024 * 2, 1024 * 2);
         // directionalLight.shadow.camera.top = 4;

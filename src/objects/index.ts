@@ -199,7 +199,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "red"
             ],
             "Последствия отказа, $": [
-                1500000,
+                "1 500 000",
                 "red"
             ],
             "Риск, $": [
@@ -590,7 +590,7 @@ export const BOUNDING_BOXES: SceneObject[] =
             "z": 0.8775,
             "type": "green"
         },
-        "displayName": "Силовой трансофрматор 35/6 кВ",
+        "displayName": "Силовой трансформатор 35/6 кВ",
         "data": {
             "ИТС, %": [
                 72.7,
