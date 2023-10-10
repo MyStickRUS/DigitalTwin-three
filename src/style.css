@@ -50,19 +50,19 @@ span {
   border: 2px solid white;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
   z-index: 2;
-  cursor: default;
+  cursor: pointer;
 }
 
 .tooltip-header-row {
   display: flex;
   margin: auto;
-  height: 2rem;
+  height: 3rem;
 }
 
 .tooltip-header-span {
   margin: auto;
   text-align: center;
-  font: normal normal bold 14px/19px Open Sans;
+  font: normal normal bold 18px/30px Open Sans;
   letter-spacing: 0px;
   color: #FFFFFF;
   opacity: 1;
@@ -74,7 +74,7 @@ span {
   padding-left: 15px;
   padding-right: 15px;
 
-  min-width: 10rem;
+  min-width: auto;
 
   text-align: center;
   font: normal normal bold 14px/19px Open Sans;
@@ -87,7 +87,7 @@ span {
   padding-left: 5px;
   padding-right: 20px;
 
-  min-width: 20rem;
+  min-width: auto;
 
   text-align: left;
   font: normal normal normal 14px/19px Open Sans;
@@ -97,7 +97,7 @@ span {
 }
 
 .tooltip-spacer {
-  width: 2px;
+  width: 1px;
   background-color: white;
   opacity: 0.75;
 }

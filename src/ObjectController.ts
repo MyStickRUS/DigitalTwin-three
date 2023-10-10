@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { BOUNDING_BOXES } from "./objects";
+import { assign } from "three/examples/jsm/nodes/Nodes.js";
 
 const SCENE_MODEL_FILENAME = "Zavod_v3.glb";
 const SCENE_U_ANIMATE_MATERIAL_NAMES = ['Wire', 'Tube'];
@@ -42,15 +43,29 @@ export class ObjectController {
                 model.userData.isClickable = false;
                 model.scale.set(SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
                 
-                //Shadows enable
+                //Shadows enable & Floor Shadows material set
+                const shadowMat = new THREE.ShadowMaterial();
+                shadowMat.opacity = 0.2;
+
                 gltf.scene.traverse ( function ( child )
                     {
                         if ( child.isMesh )
                         {
+                            //child.material.side = THREE.DoubleSide;
                             child.castShadow = true;
                             child.receiveShadow = true;
                         }
+                        // if ( child.name = 'Floor')
+                        // {
+                        //     child.material = shadowMat
+                        // }
                     });
+
+
+
+                
+
+
                 scene.add(model);
                 this.animateMaterialsOffset(scene);
 
