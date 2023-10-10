@@ -6,7 +6,8 @@ import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
 import { getAnnotationScreenPosition } from './Utils';
 
-const IS_DEBUG = true;
+const IS_DEBUG = false;
+const SHOW_CAMERA_CONTROLS = false;
 const CAMERA_INITIAL_POSITION = {
     x: 6.5,
     y: 14.5,
@@ -16,8 +17,6 @@ const CAMERA_INITIAL_POSITION = {
 const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
 export class SceneController {
-    debug = IS_DEBUG;
-
     /**THREE.Scene & Partial<{userData?: any[]}> */
     scene: THREE.Scene;
 
@@ -29,10 +28,11 @@ export class SceneController {
     mouse: THREE.Vector2;
     objectController: ObjectController;
     raycaster: THREE.Raycaster;
+    cameraHelper: THREE.CameraHelper
 
     clock: THREE.Clock;
 
-    mousePointedObject: THREE.Object3D | null = null;
+    // mousePointedObject: THREE.Object3D | null = null;
     tooltippedObject: THREE.Object3D | null = null;
 
     frustumSize: number = 10;
@@ -58,7 +58,7 @@ export class SceneController {
         // Add Light
         const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
         directionalLight.position.set (-10, 10, 10);
-        if(this.debug) {
+        if(IS_DEBUG) {
             directionalLight.castShadow = true;
         }
 
@@ -75,10 +75,9 @@ export class SceneController {
         this.scene.add( directionalLight );
         
         //Helper 
-        if(this.debug) {
-            var shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
-            this.scene.add( shadowHelper );
-        }
+        const shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
+        this.cameraHelper = shadowHelper;
+        this.scene.add( shadowHelper );
 
         //Set Envmap
         const textureLoader = new THREE.TextureLoader();
@@ -110,7 +109,7 @@ export class SceneController {
 
         window.addEventListener('resize', this.onWindowResize, false);
         window.addEventListener('click', this.onClick, false);
-        window.addEventListener('mousemove', this.onMouseMove, false);
+        // window.addEventListener('mousemove', this.onMouseMove, false);
         window.addEventListener('dblclick', this.onDoubleClick, false);
 
         this.htmlTooltip = getHtmlTooltip();
@@ -120,7 +119,7 @@ export class SceneController {
         this.boundingBoxes = this.objectController.loadBoundingBoxes(this.scene);
         this.animate();
 
-        if(this.debug) {
+        if(SHOW_CAMERA_CONTROLS) {
             this.addCameraControl();
         }
     }
@@ -131,29 +130,45 @@ export class SceneController {
         controls.enableRotate = true;
         controls.enablePan = true;
         controls.target.set(0, 0, 0);
-        controls.enableDamping = true;
+        // controls.enableDamping = true;
         controls.maxPolarAngle = Math.PI / 2 - 0.15
 
         return controls;
     }
 
     findCursorIntersectingObjects() {
+        const interactibleObjects = this.scene.children.filter(obj => obj.userData.isClickable)
+
         return this.raycaster
-            .intersectObjects(this.scene.children, true)
+            .intersectObjects(interactibleObjects, true)
     }
 
-    onClick = (event: MouseEvent | TouchEvent) => {
+    onClick = (event: MouseEvent
+        // | TouchEvent
+        ) => {
         event.preventDefault();
-        const closestIntersection = this.raycaster.intersectObjects(this.scene.children.filter(obj => obj.userData.isClickable))[0]
-        closestIntersection && console.log('intersection object', closestIntersection)
-        closestIntersection?.object?.userData && console.log('object userdata', closestIntersection?.object?.userData)
-        closestIntersection?.point && console.log('point', closestIntersection?.point)
-    
-        if(!this.mousePointedObject) {
-            return
-        }
 
-        this.tooltippedObject = this.mousePointedObject;
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+
+        const closestIntersection = this.findCursorIntersectingObjects()[0]
+        
+        // const interactibleObjects = this.scene.children.filter(obj => obj.userData.isClickable)
+        // const closestIntersection = this.raycaster.intersectObjects(interactibleObjects)[0]
+        // closestIntersection && console.log('intersection object', closestIntersection)
+        // closestIntersection?.object?.userData && console.log('object userdata', closestIntersection?.object?.userData)
+        // closestIntersection?.point && console.log('point', closestIntersection?.point)
+    
+        // if(!this.mousePointedObject) {
+        //     return
+        // }
+
+        this.tooltippedObject = closestIntersection?.object;
+        if(!this.tooltippedObject) {
+            return;
+        }
         console.log(this.tooltippedObject)
     
         if (closestIntersection) {
@@ -194,12 +209,12 @@ export class SceneController {
     onDoubleClick = (event: MouseEvent) => {
         event.preventDefault();
 
-        if(this.mousePointedObject && !this.objectController.isObjectBoundingBox(this.mousePointedObject)) {
+        // if(this.mousePointedObject && !this.objectController.isObjectBoundingBox(this.mousePointedObject)) {
             this.hideHtmlTooltip();
 
             gsap.to(this.camera.position, {...CAMERA_INITIAL_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
             return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
-        }
+        // }
     };
 
     onWindowResize = () => {
@@ -214,7 +229,9 @@ export class SceneController {
         this.controls.update();
 
         this.positionAnnotations();
-        this.positionTable()
+        if(!this.htmlTooltip.hidden) {
+            this.positionTable()
+        }
 
         if(!this.annotationsRendered) {
             this.objectController.generateAnnotations();
@@ -227,18 +244,30 @@ export class SceneController {
         }
     };
 
-    onMouseMove = (event: MouseEvent) => {
-        event.preventDefault();
+    // onMouseMove = (event: MouseEvent) => {
+    //     event.preventDefault();
 
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    //     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    //     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        this.raycaster.setFromCamera(this.mouse, this.camera);
+    //     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-        const intersects = this.findCursorIntersectingObjects()
+    //     const intersects = this.findCursorIntersectingObjects()
 
-        this.mousePointedObject = intersects[0]?.object;
-    }
+    //     // const obj = intersects[0]?.object;
+
+    //     intersects.forEach(intersection => {
+    //         const obj = intersection.object
+    //         // @ts-ignore
+    //         if(![this.cameraHelper].includes(obj) && obj.userData.isClickable) {
+    //             this.mousePointedObject = obj;
+    //             return;
+    //         }
+    //     })
+    //     // if(.includes(obj)) {
+
+    //     // }
+    // }
 
     getCamera = (position: typeof CAMERA_INITIAL_POSITION) => {
         const camera = new THREE.PerspectiveCamera(45, this.cameraAspect, 1, 1000)
@@ -283,11 +312,19 @@ export class SceneController {
     }
 
     private positionAnnotations() {
+        // FIXME:
         this.boundingBoxes.forEach(box => {
             const pos = getAnnotationScreenPosition(box, this.camera);
             const annotation = document.getElementById(`${box.userData.fileName}-annotation`);
     
             if(!annotation || !pos) return;
+
+            // gsap.to(this.camera.position, {
+            //     x: closestIntersection.object.parent?.userData.cameraPosition.x,
+            //     y: closestIntersection.object.parent?.userData.cameraPosition.y,
+            //     z: closestIntersection.object.parent?.userData.cameraPosition.z,
+            //     duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS
+            // });
     
             annotation.style.left = `${pos.x}px`;
             annotation.style.top = `${pos.y}px`;

@@ -58,7 +58,6 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
 
         const interval = setInterval(() => {
             cell2.innerText = getRandomIntInclusive(valMin, valMax)
-            debugger;
         }, updateIntervalSec * 1000)
         updateIntervals.push(interval);
     }
