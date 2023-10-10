@@ -7,7 +7,7 @@ import { GUI } from 'dat.gui';
 import { getAnnotationScreenPosition } from './Utils';
 
 const IS_DEBUG = false;
-const SHOW_CAMERA_CONTROLS = true;
+const SHOW_CAMERA_CONTROLS = false;
 const CAMERA_INITIAL_POSITION = {
     x: 2,
     y: 6.5,
@@ -28,7 +28,7 @@ export class SceneController {
     mouse: THREE.Vector2;
     objectController: ObjectController;
     raycaster: THREE.Raycaster;
-    cameraHelper: THREE.CameraHelper
+    cameraHelper?: THREE.CameraHelper
 
     clock: THREE.Clock;
 
@@ -72,10 +72,12 @@ export class SceneController {
 
         this.scene.add( directionalLight );
         
-        //Helper 
-        const shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
-        this.cameraHelper = shadowHelper;
-        this.scene.add( shadowHelper );
+        if(IS_DEBUG) {
+            //Helper
+            // const shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
+            // this.cameraHelper = shadowHelper;
+            // this.scene.add( shadowHelper );
+        }
 
         //Set Envmap
         const textureLoader = new THREE.TextureLoader();
@@ -129,6 +131,7 @@ export class SceneController {
         controls.enablePan = true;
         controls.target.set(0, 0, 0);
         // controls.enableDamping = true;
+        // controls.dampingFactor = 0.02
         controls.maxPolarAngle = Math.PI / 2 - 0.15
 
         return controls;
@@ -163,10 +166,12 @@ export class SceneController {
         //     return
         // }
 
-        this.tooltippedObject = closestIntersection?.object;
-        if(!this.tooltippedObject) {
+        if(!closestIntersection?.object) {
             return;
         }
+
+        this.tooltippedObject = closestIntersection?.object;
+
         console.log(this.tooltippedObject)
     
         if (closestIntersection) {
@@ -310,23 +315,17 @@ export class SceneController {
     }
 
     private positionAnnotations() {
-        // FIXME:
         this.boundingBoxes.forEach(box => {
             const pos = getAnnotationScreenPosition(box, this.camera);
             const annotation = document.getElementById(`${box.userData.fileName}-annotation`);
-    
-            if(!annotation || !pos) return;
 
-            // gsap.to(this.camera.position, {
-            //     x: closestIntersection.object.parent?.userData.cameraPosition.x,
-            //     y: closestIntersection.object.parent?.userData.cameraPosition.y,
-            //     z: closestIntersection.object.parent?.userData.cameraPosition.z,
-            //     duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS
-            // });
-    
+            if(!annotation || !pos) {
+                return;
+            }
+
+            annotation.style.display = 'block';
             annotation.style.left = `${pos.x}px`;
             annotation.style.top = `${pos.y}px`;
-            annotation.style.display = 'block';
         });
     }
 }
