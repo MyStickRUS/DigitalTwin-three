@@ -6,11 +6,11 @@ import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
 import { getAnnotationScreenPosition } from './Utils';
 
-const IS_DEBUG = false;
-const CAMERA_DEFAULT_POSITION = {
-    x: 15,
-    y: 27.5,
-    z: 40
+const IS_DEBUG = true;
+const CAMERA_INITIAL_POSITION = {
+    x: 6.5,
+    y: 14.5,
+    z: 15
 }
 
 const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
@@ -105,7 +105,7 @@ export class SceneController {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
         document.body.appendChild(this.renderer.domElement);
 
-        this.camera = this.getCamera(CAMERA_DEFAULT_POSITION)
+        this.camera = this.getCamera(CAMERA_INITIAL_POSITION)
         this.controls = this.setupControls();
 
         window.addEventListener('resize', this.onWindowResize, false);
@@ -117,7 +117,7 @@ export class SceneController {
 
         this.objectController.loadGlbFactory(this.scene);
 
-        this.boundingBoxes = this.objectController.addBoundingBoxes(this.scene);
+        this.boundingBoxes = this.objectController.loadBoundingBoxes(this.scene);
         this.animate();
 
         if(this.debug) {
@@ -196,7 +196,7 @@ export class SceneController {
         if(this.mousePointedObject && !this.objectController.isObjectBoundingBox(this.mousePointedObject)) {
             this.hideHtmlTooltip();
 
-            gsap.to(this.camera.position, {...CAMERA_DEFAULT_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+            gsap.to(this.camera.position, {...CAMERA_INITIAL_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
             return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
         }
     };
@@ -239,7 +239,7 @@ export class SceneController {
         this.mousePointedObject = intersects[0]?.object;
     }
 
-    getCamera = (position: typeof CAMERA_DEFAULT_POSITION) => {
+    getCamera = (position: typeof CAMERA_INITIAL_POSITION) => {
         const camera = new THREE.PerspectiveCamera(45, this.cameraAspect, 1, 1000)
         camera.position.set(position.x, position.y, position.z);
         camera.fov = 35;

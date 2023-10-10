@@ -5,6 +5,8 @@ import { BOUNDING_BOXES } from "./objects";
 const SCENE_MODEL_FILENAME = "Zavod_v3.glb";
 const SCENE_U_ANIMATE_MATERIAL_NAMES = ['Wire', 'Tube'];
 const SCENE_U_ANIMATION_SPEED = 0.01;
+const SCENE_SCALE = 0.25;
+
 export class ObjectController {
     generateAnnotations() {
         BOUNDING_BOXES.forEach((box) => {
@@ -38,6 +40,7 @@ export class ObjectController {
                 console.log(gltf.scene);
                 model.position.set(0, 0, 0);
                 model.userData.isClickable = false;
+                model.scale.set(SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
                 
                 //Shadows enable
                 gltf.scene.traverse ( function ( child )
@@ -98,7 +101,7 @@ export class ObjectController {
         });
     }
 
-    addBoundingBoxes(scene: THREE.Scene) {
+    loadBoundingBoxes(scene: THREE.Scene) {
         const loader = new GLTFLoader();
         const res: THREE.Group[] = [];
         const transparentMaterial = new THREE.MeshStandardMaterial({ color: "black", opacity: 0.0, transparent: true });
@@ -109,6 +112,7 @@ export class ObjectController {
                 (gltf) => {
                     const model = gltf.scene;
                     model.position.set(0, 0, 0);
+                    model.scale.set(SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
                     model.userData.isClickable = true;
                     Object.assign(model.userData, obj);
                     model.traverse((child) => {
