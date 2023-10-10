@@ -7,11 +7,11 @@ import { GUI } from 'dat.gui';
 import { getAnnotationScreenPosition } from './Utils';
 
 const IS_DEBUG = false;
-const SHOW_CAMERA_CONTROLS = false;
+const SHOW_CAMERA_CONTROLS = true;
 const CAMERA_INITIAL_POSITION = {
-    x: 6.5,
-    y: 14.5,
-    z: 15
+    x: 2,
+    y: 6.5,
+    z: 7.5
 }
 
 const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
@@ -268,7 +268,7 @@ export class SceneController {
     // }
 
     getCamera = (position: typeof CAMERA_INITIAL_POSITION) => {
-        const camera = new THREE.PerspectiveCamera(45, this.cameraAspect, 1, 1000)
+        const camera = new THREE.PerspectiveCamera(45, this.cameraAspect, 0.1, 1000)
         camera.position.set(position.x, position.y, position.z);
         camera.fov = 35;
 

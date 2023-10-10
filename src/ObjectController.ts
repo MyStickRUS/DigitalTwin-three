@@ -5,7 +5,7 @@ import { BOUNDING_BOXES } from "./objects";
 const SCENE_MODEL_FILENAME = "Zavod_v3.glb";
 const SCENE_U_ANIMATE_MATERIAL_NAMES = ['Wire', 'Tube'];
 const SCENE_U_ANIMATION_SPEED = 0.01;
-const SCENE_SCALE = 0.25;
+const SCENE_SCALE = 0.15;
 
 export class ObjectController {
     generateAnnotations() {

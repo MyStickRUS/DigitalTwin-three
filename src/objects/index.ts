@@ -35,14 +35,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "01.glb",
         "cameraPosition": {
-            "x": 1.625,
-            "y": 0.875,
-            "z": 4
+            "x": 0.975,
+            "y": 0.525,
+            "z": 2.4
         },
         "annotation": {
-            "x": 0.44,
-            "y": 0.385,
-            "z": 3.02,
+            "x": 0.264,
+            "y": 0.231,
+            "z": 1.812,
             "type": "green"
         },
         "data": {
@@ -64,14 +64,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "02.glb",
         "cameraPosition": {
-            "x": 0.25,
-            "y": 0.875,
-            "z": 4.625
+            "x": 0.15,
+            "y": 0.525,
+            "z": 2.775
         },
         "annotation": {
-            "x": -0.695,
-            "y": 0.3525,
-            "z": 3.05,
+            "x": -0.417,
+            "y": 0.21149999999999997,
+            "z": 1.8299999999999996,
             "type": "yellow"
         },
         "displayName": "Турбина",
@@ -93,14 +93,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "03.glb",
         "cameraPosition": {
-            "x": -1.875,
-            "y": 1.125,
-            "z": 4.25
+            "x": -1.125,
+            "y": 0.675,
+            "z": 2.55
         },
         "annotation": {
-            "x": -2.815,
-            "y": 0.46,
-            "z": 3.2525,
+            "x": -1.689,
+            "y": 0.276,
+            "z": 1.9515,
             "type": "red"
         },
         "data": {
@@ -140,14 +140,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "04.glb",
         "cameraPosition": {
-            "x": -1.875,
-            "y": 0.625,
-            "z": 2.375
+            "x": -1.125,
+            "y": 0.375,
+            "z": 1.425
         },
         "annotation": {
-            "x": -2.9325,
-            "y": 0.34,
-            "z": 1.735,
+            "x": -1.7594999999999998,
+            "y": 0.20400000000000001,
+            "z": 1.041,
             "type": "yellow"
         },
         "displayName": "Насосная станция",
@@ -183,14 +183,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "05.glb",
         "cameraPosition": {
-            "x": -1.125,
-            "y": 2.25,
-            "z": 2.625
+            "x": -0.675,
+            "y": 1.35,
+            "z": 1.575
         },
         "annotation": {
-            "x": -2.7275,
-            "y": 0.61,
-            "z": 0.435,
+            "x": -1.6365000000000003,
+            "y": 0.366,
+            "z": 0.261,
             "type": "red"
         },
         "data": {
@@ -246,14 +246,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "06.glb",
         "cameraPosition": {
-            "x": -0.625,
-            "y": 1.75,
+            "x": -0.375,
+            "y": 1.05,
             "z": 0
         },
         "annotation": {
-            "x": -2.55,
-            "y": 0.6825,
-            "z": -1.2325,
+            "x": -1.5299999999999998,
+            "y": 0.4095,
+            "z": -0.7394999999999999,
             "type": "green"
         },
         "displayName": "Трубопровод",
@@ -287,14 +287,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "07.glb",
         "cameraPosition": {
-            "x": -0.875,
-            "y": 3.75,
-            "z": 0.5
+            "x": -0.525,
+            "y": 2.25,
+            "z": 0.3
         },
         "annotation": {
-            "x": -2.2225,
-            "y": 2.0525,
-            "z": -1.855,
+            "x": -1.3335000000000001,
+            "y": 1.2315,
+            "z": -1.113,
             "type": "green"
         },
         "displayName": "Трубопровод",
@@ -316,14 +316,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "08.glb",
         "cameraPosition": {
-            "x": -0.625,
-            "y": 1.875,
-            "z": -0.625
+            "x": -0.375,
+            "y": 1.125,
+            "z": -0.375
         },
         "annotation": {
-            "x": -2.1675,
-            "y": 1.065,
-            "z": -2.1,
+            "x": -1.3005,
+            "y": 0.639,
+            "z": -1.2600000000000002,
             "type": "green"
         },
         "displayName": "Колонна",
@@ -345,14 +345,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "09.glb",
         "cameraPosition": {
-            "x": -0.625,
-            "y": 1,
-            "z": -1.875
+            "x": -0.375,
+            "y": 0.6,
+            "z": -1.125
         },
         "annotation": {
-            "x": -2.105,
-            "y": 0.4,
-            "z": -3.225,
+            "x": -1.263,
+            "y": 0.24000000000000005,
+            "z": -1.935,
             "type": "green"
         },
         "data": {
@@ -383,13 +383,13 @@ export const BOUNDING_BOXES: SceneObject[] =
         "fileName": "10.glb",
         "cameraPosition": {
             "x": 0,
-            "y": 1.125,
-            "z": -1.125
+            "y": 0.675,
+            "z": -0.675
         },
         "annotation": {
-            "x": -0.8425,
-            "y": 0.385,
-            "z": -2.01,
+            "x": -0.5055,
+            "y": 0.231,
+            "z": -1.206,
             "type": "orange"
         },
         "displayName": "КТПН 1",
@@ -411,14 +411,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "11.glb",
         "cameraPosition": {
-            "x": 1.625,
-            "y": 1.125,
-            "z": -0.625
+            "x": 0.975,
+            "y": 0.675,
+            "z": -0.375
         },
         "annotation": {
-            "x": 0.6075,
-            "y": 0.6425,
-            "z": -2.1225,
+            "x": 0.36450000000000005,
+            "y": 0.38549999999999995,
+            "z": -1.2734999999999999,
             "type": "green"
         },
         "displayName": "ВЛЭП 6 (10) кВ",
@@ -440,14 +440,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "12.glb",
         "cameraPosition": {
-            "x": 2.5,
-            "y": 1,
-            "z": -1.375
+            "x": 1.5,
+            "y": 0.6,
+            "z": -0.825
         },
         "annotation": {
-            "x": 2.02,
-            "y": 0.3325,
-            "z": -2.01,
+            "x": 1.2120000000000002,
+            "y": 0.1995,
+            "z": -1.206,
             "type": "red"
         },
         "displayName": "КТПН 2",
@@ -469,14 +469,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "13.glb",
         "cameraPosition": {
-            "x": 5.875,
-            "y": 1,
-            "z": 2.375
+            "x": 3.525,
+            "y": 0.6,
+            "z": 1.425
         },
         "annotation": {
-            "x": 4.5775,
-            "y": 0.225,
-            "z": 1.0875,
+            "x": 2.7464999999999997,
+            "y": 0.135,
+            "z": 0.6525,
             "type": "green"
         },
         "displayName": "Электродвигатель",
@@ -520,14 +520,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "14.glb",
         "cameraPosition": {
-            "x": 5.875,
-            "y": 1.625,
+            "x": 3.525,
+            "y": 0.975,
             "z": 0
         },
         "annotation": {
-            "x": 4.5025,
-            "y": 0.805,
-            "z": -1.3725,
+            "x": 2.7015000000000002,
+            "y": 0.483,
+            "z": -0.8234999999999999,
             "type": "yellow"
         },
         "displayName": "Доменная печь",
@@ -548,14 +548,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "15.glb",
         "cameraPosition": {
-            "x": 7,
-            "y": 1.625,
-            "z": 0.5
+            "x": 4.2,
+            "y": 0.975,
+            "z": 0.3
         },
         "annotation": {
-            "x": 5.175,
-            "y": 0.21,
-            "z": -1.69,
+            "x": 3.1049999999999995,
+            "y": 0.126,
+            "z": -1.014,
             "type": "red"
         },
         "displayName": "Прокатный стан",
@@ -580,14 +580,14 @@ export const BOUNDING_BOXES: SceneObject[] =
     {
         "fileName": "16.glb",
         "cameraPosition": {
-            "x": 1.625,
-            "y": 0.625,
-            "z": 1.625
+            "x": 0.975,
+            "y": 0.375,
+            "z": 0.975
         },
         "annotation": {
-            "x": 0.9,
-            "y": 0.3275,
-            "z": 0.8775,
+            "x": 0.54,
+            "y": 0.1965,
+            "z": 0.5265,
             "type": "green"
         },
         "displayName": "Силовой трансформатор 35/6 кВ",
