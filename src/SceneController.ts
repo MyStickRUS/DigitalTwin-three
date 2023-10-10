@@ -7,7 +7,7 @@ import { GUI } from 'dat.gui';
 import { getAnnotationScreenPosition } from './Utils';
 
 const IS_DEBUG = false;
-const SHOW_CAMERA_CONTROLS = true;
+const SHOW_CAMERA_CONTROLS = false;
 const CAMERA_INITIAL_POSITION = {
     x: 2,
     y: 6.5,
