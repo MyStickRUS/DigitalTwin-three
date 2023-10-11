@@ -13,7 +13,7 @@ const CAMERA_INITIAL_POSITION = {
     y: 6.5,
     z: 7.5
 }
-const LIGHT_MAP_SIZE = 8192;
+const LIGHT_MAP_SIZE = 2048;
 
 const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
@@ -49,8 +49,6 @@ export class SceneController {
 
     annotationsRendered = false;
 
-
-
     constructor() {
         // Create scene
         this.scene = new THREE.Scene();
@@ -61,23 +59,21 @@ export class SceneController {
         directionalLight.position.set (-10, 10, 10);
         directionalLight.castShadow = true;
 
-        // directionalLight.shadow.mapSize = new THREE.Vector2(1024 * 2, 1024 * 2);
-        // directionalLight.shadow.camera.top = 4;
-        // directionalLight.shadow.camera.bottom = - 4;
-        // directionalLight.shadow.camera.left = - 4;
-        // directionalLight.shadow.camera.right = 4;
-        directionalLight.shadow.mapSize.width = LIGHT_MAP_SIZE;
-        directionalLight.shadow.mapSize.height = LIGHT_MAP_SIZE;
-        // directionalLight.shadow.camera.near = 0.5; // default
-        // directionalLight.shadow.camera.far = 500; // default
+        directionalLight.shadow.mapSize = new THREE.Vector2(LIGHT_MAP_SIZE, LIGHT_MAP_SIZE);
+        directionalLight.shadow.camera.top = 4;
+        directionalLight.shadow.camera.bottom = - 4;
+        directionalLight.shadow.camera.left = - 4;
+        directionalLight.shadow.camera.right = 4;
+        directionalLight.shadow.camera.near = 0.5; // default
+        directionalLight.shadow.camera.far = 50; // default
 
         this.scene.add( directionalLight );
         
         if(IS_DEBUG) {
             //Helper
-            // const shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
-            // this.cameraHelper = shadowHelper;
-            // this.scene.add( shadowHelper );
+            const shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
+            this.cameraHelper = shadowHelper;
+            this.scene.add( shadowHelper );
         }
 
         //Set Envmap
@@ -102,7 +98,7 @@ export class SceneController {
         this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+        this.renderer.shadowMap.type = THREE.PCFShadowMap; // default THREE.PCFShadowMap
         document.body.appendChild(this.renderer.domElement);
 
         this.camera = this.getCamera(CAMERA_INITIAL_POSITION)
@@ -310,8 +306,8 @@ export class SceneController {
 
         const pos = getAnnotationScreenPosition(this.tooltippedObject, this.camera)
         if(pos) {
-            this.htmlTooltip.style.left = `${pos.x-10}px`;
-            this.htmlTooltip.style.top = `${pos.y-5}px`;
+            this.htmlTooltip.style.left = `${pos.x-12}px`;
+            this.htmlTooltip.style.top = `${pos.y-12}px`;
         }
     }
 
