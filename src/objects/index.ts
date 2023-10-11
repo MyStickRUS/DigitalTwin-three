@@ -1,7 +1,7 @@
 export type SceneObject = {
     fileName: string;
     cameraPosition: Coordinates;
-    annotation: Coordinates & {type: FacilityStatus};
+    annotation: Partial<Coordinates> & {type: FacilityStatus};
     data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic };
     displayName: string;
 };
@@ -253,7 +253,7 @@ export const BOUNDING_BOXES: SceneObject[] =
         "annotation": {
             "x": -1.5299999999999998,
             "y": 0.4095,
-            "z": -0.7394999999999999,
+            "z": 2,
             "type": "green"
         },
         "displayName": "Трубопровод",

@@ -15,6 +15,8 @@ const CAMERA_INITIAL_POSITION = {
 }
 const LIGHT_MAP_SIZE = 2048;
 
+const TOOLTIP_OFFSET_07 = 15; //px
+
 const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
 export class SceneController {
@@ -133,19 +135,8 @@ export class SceneController {
         controls.maxPolarAngle = Math.PI / 2 - 0.15
 
         // Limit pan distance
-        const minPan = new THREE.Vector3(-1, 0, -1);
-        const maxPan = new THREE.Vector3(3, 0, 1);
-        const _v = new THREE.Vector3();
-
-        controls.addEventListener("change", (event) => {
-            if (this.isCameraFlying) {
-                return;
-            }
-            _v.copy(controls.target);
-            controls.target.clamp(minPan, maxPan);
-            _v.sub(controls.target);
-            this.camera.position.sub(_v);
-        });
+        
+        controls.addEventListener("change", this.limitCameraPanning);
 
         return controls;
     }
@@ -318,6 +309,7 @@ export class SceneController {
     }
 
     private positionTable() {
+        debugger;
         if(!this.tooltippedObject) {
             return;
         }
@@ -325,7 +317,7 @@ export class SceneController {
         const pos = getAnnotationScreenPosition(this.tooltippedObject, this.camera)
         if(pos) {
             this.htmlTooltip.style.left = `${pos.x-12}px`;
-            this.htmlTooltip.style.top = `${pos.y-12}px`;
+            this.htmlTooltip.style.top = this.tooltippedObject.name === '07' ? `${pos.y - 12 - TOOLTIP_OFFSET_07}px` : `${pos.y - 12}px`;
         }
     }
 
@@ -340,8 +332,23 @@ export class SceneController {
 
             annotation.style.display = 'block';
             annotation.style.left = `${pos.x}px`;
-            annotation.style.top = `${pos.y}px`;
+            annotation.style.top = box.userData.fileName === '07.glb' ? `${pos.y - TOOLTIP_OFFSET_07}px` : `${pos.y}px`;
         });
+    }
+
+    private limitCameraPanning(_: any) {
+        // FIXME: this causes camera to jump if we pan after flying to an object
+
+        const minPan = new THREE.Vector3(-1, 0, -1);
+        const maxPan = new THREE.Vector3(3, 0, 1);
+        const _v = new THREE.Vector3();
+        // if (this.isCameraFlying) {
+        //     return;
+        // }
+        // _v.copy(controls.target);
+        // controls.target.clamp(minPan, maxPan);
+        // _v.sub(controls.target);
+        // this.camera.position.sub(_v);
     }
 }
 

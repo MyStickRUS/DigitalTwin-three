@@ -75,6 +75,11 @@ span {
   height: 3rem;
 }
 
+span.tooltip-header-span {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+
 .tooltip-header-span {
   margin: auto;
   text-align: center;
