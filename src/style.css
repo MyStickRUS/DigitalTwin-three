@@ -35,6 +35,22 @@ span {
   background-color: #000000CC;
   color: #FFFFFF;
   z-index: 1;
+  border-radius: 5px;
+  border-collapse: separate; 
+  border-spacing: 0; 
+  overflow: hidden;
+}
+
+#tooltip th:first-child, table td:first-child {
+  border-bottom-left-radius: 5px;
+}
+
+#tooltip th:last-child, table td:last-child {
+  border-bottom-right-radius: 5px;
+}
+
+#tooltip tr:last-child td:first-child {
+  padding-bottom: 5px;
 }
 
 .annotation {
@@ -79,12 +95,16 @@ span {
   letter-spacing: 0px;
   /* color: #29FF00; */
   opacity: 1;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 .tooltip-cell-left {
   padding-left: 5px;
   padding-right: 20px;
-
+  padding-top: 3px;
+  padding-bottom: 3px;
+  
   text-align: left;
   font: normal normal normal 14px/19px Open Sans;
   letter-spacing: 0px;

@@ -45,10 +45,14 @@ export class ObjectController {
                 //Shadows enable
                 gltf.scene.traverse ( function ( child )
                     {
-                        if ( child.isMesh )
-                        {
+                        if (child instanceof THREE.Mesh) {
                             child.castShadow = true;
                             child.receiveShadow = true;
+                        }
+                        if(child.name === 'Floor' && child instanceof THREE.Mesh) {
+                            const shadMaterial = new THREE.ShadowMaterial();
+                            shadMaterial.opacity = 0.4;
+                            child.material = shadMaterial
                         }
                     });
                 scene.add(model);
@@ -114,6 +118,7 @@ export class ObjectController {
                     model.position.set(0, 0, 0);
                     model.scale.set(SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
                     model.userData.isClickable = true;
+                    model.visible = false;
                     Object.assign(model.userData, obj);
                     model.traverse((child) => {
                         if ("material" in child) {

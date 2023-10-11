@@ -48,6 +48,7 @@ export class SceneController {
     annotationSprites: THREE.Sprite[] = [];
 
     annotationsRendered = false;
+    isCameraFlying = false;
 
     constructor() {
         // Create scene
@@ -123,13 +124,28 @@ export class SceneController {
 
     setupControls() {
         const controls = new OrbitControls(this.camera, this.renderer.domElement);
-        controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
+        controls.mouseButtons = { RIGHT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, LEFT: THREE.MOUSE.ROTATE };
         controls.enableRotate = true;
         controls.enablePan = true;
         controls.target.set(0, 0, 0);
         // controls.enableDamping = true;
         // controls.dampingFactor = 0.02
         controls.maxPolarAngle = Math.PI / 2 - 0.15
+
+        // Limit pan distance
+        const minPan = new THREE.Vector3(-1, 0, -1);
+        const maxPan = new THREE.Vector3(3, 0, 1);
+        const _v = new THREE.Vector3();
+
+        controls.addEventListener("change", (event) => {
+            if (this.isCameraFlying) {
+                return;
+            }
+            _v.copy(controls.target);
+            controls.target.clamp(minPan, maxPan);
+            _v.sub(controls.target);
+            this.camera.position.sub(_v);
+        });
 
         return controls;
     }
@@ -172,6 +188,8 @@ export class SceneController {
         console.log(this.tooltippedObject)
     
         if (closestIntersection) {
+            setTimeout(() => this.isCameraFlying = false, CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS * 1000 + 100)
+            this.isCameraFlying = true;
             gsap.to(this.camera.position, {
                 x: closestIntersection.object.parent?.userData.cameraPosition.x,
                 y: closestIntersection.object.parent?.userData.cameraPosition.y,
