@@ -5,5 +5,13 @@ export default defineConfig({
     alias: {
       'three/examples/jsm': 'three/examples/jsm'
     }
+  },
+  build: {
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_debugger: true  // This option removes debugger statements
+      }
+    }
   }
 })

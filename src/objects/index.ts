@@ -303,7 +303,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 0.13,
                 "yellow"
             ],
-            "Последстви отказа, $": [
+            "Последствия отказа, $": [
                 "240,000.00",
                 "yellow"
             ],

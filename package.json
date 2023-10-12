@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --config vite.config.js",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve": "docker run --name digital-twin -d -p 80:80 -v /home/me/repos/DigitalTwin-three/dist:/usr/share/nginx/html:ro nginx:latest"
   },
   "devDependencies": {
     "@types/dat.gui": "^0.7.10",
@@ -17,6 +18,7 @@
   "dependencies": {
     "dat.gui": "^0.7.9",
     "gsap": "^3.12.2",
+    "terser": "^5.21.0",
     "three": "^0.156.1"
   }
 }
