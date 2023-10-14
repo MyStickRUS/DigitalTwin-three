@@ -6,7 +6,7 @@ import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
 import { getAnnotationScreenPosition, isUserAgentMobile } from './Utils';
 
-const IS_DEBUG = false;
+const IS_DEBUG = true;
 const SHOW_CAMERA_CONTROLS = false;
 const CAMERA_INITIAL_POSITION = {
     x: 2,
@@ -20,7 +20,6 @@ const TOOLTIP_OFFSET_07 = 15; //px
 const CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS = 1;
 
 export class SceneController {
-    /**THREE.Scene & Partial<{userData?: any[]}> */
     scene: THREE.Scene;
 
     camera: THREE.PerspectiveCamera;
@@ -35,7 +34,6 @@ export class SceneController {
 
     clock: THREE.Clock;
 
-    // mousePointedObject: THREE.Object3D | null = null;
     tooltippedObject: THREE.Object3D | null = null;
 
     frustumSize: number = 10;
@@ -51,6 +49,7 @@ export class SceneController {
 
     annotationsRendered = false;
     isCameraFlying = false;
+    isCameraZoomedInToObject = false;
 
     isMobileUserAgent: boolean;
 
@@ -111,15 +110,15 @@ export class SceneController {
         this.controls = this.setupControls();
 
         window.addEventListener('resize', this.onWindowResize, false);
+        window.addEventListener('orientationchange', this.onWindowResize);
         window.addEventListener('click', this.onClick, false);
-        // window.addEventListener('mousemove', this.onMouseMove, false);
         window.addEventListener('dblclick', this.onDoubleClick, false);
 
         this.htmlTooltip = getHtmlTooltip();
 
         this.objectController.loadGlbFactory(this.scene);
 
-        this.boundingBoxes = this.objectController.loadBoundingBoxes(this.scene);
+        this.boundingBoxes = this.objectController.loadBoundingBoxes(this.scene, IS_DEBUG);
         this.animate();
 
         if(SHOW_CAMERA_CONTROLS) {
@@ -137,9 +136,8 @@ export class SceneController {
         // controls.dampingFactor = 0.02
         controls.maxPolarAngle = Math.PI / 2 - 0.15
 
-        // Limit pan distance
-        
-        controls.addEventListener("change", this.limitCameraPanning);
+        // TODO: Limit pan distance
+        // controls.addEventListener("change", this.limitCameraPanning);
 
         return controls;
     }
@@ -173,8 +171,12 @@ export class SceneController {
         //     return
         // }
 
+        if(this.isMobileUserAgent && this.isCameraZoomedInToObject) {
+            return this.resetCamera()
+        }
+
         if(!closestIntersection?.object) {
-            return this.isMobileUserAgent ? this.resetCamera() : null;
+            return;
         }
 
         this.tooltippedObject = closestIntersection?.object;
@@ -183,6 +185,7 @@ export class SceneController {
     
         if (closestIntersection) {
             setTimeout(() => this.isCameraFlying = false, CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS * 1000 + 100)
+            this.isCameraZoomedInToObject = true;
             this.isCameraFlying = true;
             gsap.to(this.camera.position, {
                 x: closestIntersection.object.parent?.userData.cameraPosition.x,
@@ -226,10 +229,12 @@ export class SceneController {
 
     private resetCamera() {
         this.hideHtmlTooltip();
+        this.isCameraZoomedInToObject = false;
 
         gsap.to(this.camera.position, {...CAMERA_INITIAL_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
         return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
     }
+
     private onWindowResize = () => {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -256,31 +261,6 @@ export class SceneController {
             mixer.update(delta);
         }
     };
-
-    // onMouseMove = (event: MouseEvent) => {
-    //     event.preventDefault();
-
-    //     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    //     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    //     this.raycaster.setFromCamera(this.mouse, this.camera);
-
-    //     const intersects = this.findCursorIntersectingObjects()
-
-    //     // const obj = intersects[0]?.object;
-
-    //     intersects.forEach(intersection => {
-    //         const obj = intersection.object
-    //         // @ts-ignore
-    //         if(![this.cameraHelper].includes(obj) && obj.userData.isClickable) {
-    //             this.mousePointedObject = obj;
-    //             return;
-    //         }
-    //     })
-    //     // if(.includes(obj)) {
-
-    //     // }
-    // }
 
     getCamera = (position: typeof CAMERA_INITIAL_POSITION) => {
         const camera = new THREE.PerspectiveCamera(45, this.cameraAspect, 0.1, 1000)
@@ -313,7 +293,6 @@ export class SceneController {
     }
 
     private positionTable() {
-        debugger;
         if(!this.tooltippedObject) {
             return;
         }
@@ -341,18 +320,17 @@ export class SceneController {
     }
 
     private limitCameraPanning(_: any) {
-        // FIXME: this causes camera to jump if we pan after flying to an object
-
+        // FIXME: this causes camera to jump if we pan when zoomed in to an object
         const minPan = new THREE.Vector3(-1, 0, -1);
         const maxPan = new THREE.Vector3(3, 0, 1);
         const _v = new THREE.Vector3();
-        // if (this.isCameraFlying) {
-        //     return;
-        // }
-        // _v.copy(controls.target);
-        // controls.target.clamp(minPan, maxPan);
-        // _v.sub(controls.target);
-        // this.camera.position.sub(_v);
+        if (this.isCameraFlying) {
+            return;
+        }
+        _v.copy(this.controls.target);
+        this.controls.target.clamp(minPan, maxPan);
+        _v.sub(this.controls.target);
+        this.camera.position.sub(_v);
     }
 }
 
