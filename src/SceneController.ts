@@ -4,7 +4,7 @@ import { ObjectController } from './ObjectController';
 import gsap from 'gsap';
 import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
-import { getAnnotationScreenPosition } from './Utils';
+import { getAnnotationScreenPosition, isUserAgentMobile } from './Utils';
 
 const IS_DEBUG = false;
 const SHOW_CAMERA_CONTROLS = false;
@@ -52,7 +52,10 @@ export class SceneController {
     annotationsRendered = false;
     isCameraFlying = false;
 
+    isMobileUserAgent: boolean;
+
     constructor() {
+        this.isMobileUserAgent = isUserAgentMobile();
         // Create scene
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color('lightgray');
@@ -98,7 +101,7 @@ export class SceneController {
 
         // Setup renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setPixelRatio( window.devicePixelRatio );
+        this.renderer.setPixelRatio(this.isMobileUserAgent ? Math.min(3, window.devicePixelRatio) : window.devicePixelRatio );
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFShadowMap; // default THREE.PCFShadowMap
