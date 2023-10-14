@@ -127,7 +127,7 @@ export class SceneController {
         }
     }
 
-    setupControls() {
+    private setupControls() {
         const controls = new OrbitControls(this.camera, this.renderer.domElement);
         controls.mouseButtons = { RIGHT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, LEFT: THREE.MOUSE.ROTATE };
         controls.enableRotate = true;
@@ -144,14 +144,14 @@ export class SceneController {
         return controls;
     }
 
-    findCursorIntersectingObjects() {
+    private findCursorIntersectingObjects() {
         const interactibleObjects = this.scene.children.filter(obj => obj.userData.isClickable)
 
         return this.raycaster
             .intersectObjects(interactibleObjects, true)
     }
 
-    onClick = (event: MouseEvent
+    private onClick = (event: MouseEvent
         // | TouchEvent
         ) => {
         event.preventDefault();
@@ -174,7 +174,7 @@ export class SceneController {
         // }
 
         if(!closestIntersection?.object) {
-            return;
+            return this.isMobileUserAgent ? this.resetCamera() : null;
         }
 
         this.tooltippedObject = closestIntersection?.object;
@@ -210,7 +210,7 @@ export class SceneController {
     };
     
 
-    addCameraControl() {
+    private addCameraControl() {
         const gui = new GUI();
 
         gui.add( this.camera.position , 'x', -50, 50 ).step(0.5).listen()
@@ -218,24 +218,25 @@ export class SceneController {
         gui.add( this.camera.position , 'z', -50, 50 ).step(0.5).listen()
     }
 
-    onDoubleClick = (event: MouseEvent) => {
+    private onDoubleClick = (event: MouseEvent) => {
         event.preventDefault();
 
-        // if(this.mousePointedObject && !this.objectController.isObjectBoundingBox(this.mousePointedObject)) {
-            this.hideHtmlTooltip();
-
-            gsap.to(this.camera.position, {...CAMERA_INITIAL_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
-            return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
-        // }
+        return this.resetCamera()
     };
 
-    onWindowResize = () => {
+    private resetCamera() {
+        this.hideHtmlTooltip();
+
+        gsap.to(this.camera.position, {...CAMERA_INITIAL_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+        return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+    }
+    private onWindowResize = () => {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
     }
 
-    animate = () => {
+    private animate = () => {
         requestAnimationFrame(this.animate);
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
