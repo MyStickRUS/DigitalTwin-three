@@ -6,7 +6,7 @@ import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
 import { GUI } from 'dat.gui';
 import { getAnnotationScreenPosition, isUserAgentMobile } from './Utils';
 
-const IS_DEBUG = true;
+const IS_DEBUG = false;
 const SHOW_CAMERA_CONTROLS = false;
 const CAMERA_INITIAL_POSITION = {
     x: 2,
