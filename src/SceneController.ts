@@ -100,7 +100,9 @@ export class SceneController {
 
         // Setup renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setPixelRatio(this.isMobileUserAgent ? Math.min(3, window.devicePixelRatio) : window.devicePixelRatio );
+        if(!this.isMobileUserAgent) {
+            this.renderer.setPixelRatio(window.devicePixelRatio);
+        } 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFShadowMap; // default THREE.PCFShadowMap
@@ -118,7 +120,7 @@ export class SceneController {
 
         this.objectController.loadGlbFactory(this.scene);
 
-        this.boundingBoxes = this.objectController.loadBoundingBoxes(this.scene, IS_DEBUG);
+        this.boundingBoxes = this.objectController.loadBoundingBoxes(this.scene);
         this.animate();
 
         if(SHOW_CAMERA_CONTROLS) {
