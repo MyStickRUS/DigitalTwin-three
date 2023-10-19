@@ -6,13 +6,16 @@ services:
       context: .
       dockerfile: Dockerfile.builder
     volumes:
-      - ./dist:/app/dist
+      - build-artifacts:/app/dist
 
   server:
     image: nginx:latest
     depends_on:
       - builder
     volumes:
-      - ./dist:/usr/share/nginx/html:ro
+      - build-artifacts:/usr/share/nginx/html:ro
     ports:
       - "80:80"
+
+volumes:
+  build-artifacts:
