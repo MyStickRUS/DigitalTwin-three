@@ -83,7 +83,7 @@ export class SceneController {
 
         //Set Envmap
         const textureLoader = new THREE.TextureLoader();
-        const textureEquirec = textureLoader.load( '3 Point Beige.png' );
+        const textureEquirec = textureLoader.load( '3 Point Beige-min.png' );
         textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
         textureEquirec.colorSpace = THREE.SRGBColorSpace;
 

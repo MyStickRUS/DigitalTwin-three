@@ -2,7 +2,14 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { BOUNDING_BOXES } from "./objects";
 
-const SCENE_MODEL_FILENAME = "Zavod_v3.glb";
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+// Initialize Draco loader
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderConfig({ type: 'js' });
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+
+const SCENE_MODEL_FILENAME = "Zavod_v3_compressed.glb";
 const SCENE_U_ANIMATE_MATERIAL_NAMES = ['Wire', 'Tube'];
 const SCENE_U_ANIMATION_SPEED = 0.01;
 const SCENE_SCALE = 0.15;
@@ -32,6 +39,7 @@ export class ObjectController {
 
     loadGlbFactory(scene: THREE.Scene) {
         const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader)
 
         loader.load(
             SCENE_MODEL_FILENAME,
