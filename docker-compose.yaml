@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+    volumes:
+      - ./dist:/app/dist
+
+  server:
+    image: nginx:latest
+    depends_on:
+      - builder
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+    ports:
+      - "80:80"
