@@ -251,9 +251,9 @@ export const BOUNDING_BOXES: SceneObject[] =
             "z": 0
         },
         "annotation": {
-            "x": -1.5299999999999998,
-            "y": 0.4095,
-            "z": 2,
+            "x": -1.7,
+            "y": 0.4,
+            "z": -0.7,
             "type": "green"
         },
         "displayName": "Трубопровод",
