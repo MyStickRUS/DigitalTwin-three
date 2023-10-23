@@ -87,7 +87,7 @@ span {
 }
 
 .passport-link-wrapper.visible {
-  opacity: 1;
+  opacity: 90%;
 }
 
 .passport-link-wrapper {
