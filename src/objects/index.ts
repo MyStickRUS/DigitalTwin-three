@@ -157,7 +157,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "yellow"
             ],
             "Дата ввода в эксплуатацию": [
-                "11/8/2015",
+                "11.8.2015",
                 "yellow"
             ],
             "Давление на входе, мПа": [
@@ -199,7 +199,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "red"
             ],
             "Последствия отказа, $": [
-                "1 500 000",
+                1500000,
                 "red"
             ],
             "Риск, $": [
@@ -207,7 +207,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "red"
             ],
             "Дата ввода в эксплуатацию": [
-                "08/23/2012",
+                "08.23.2012",
                 "green"
             ],
             "Температура продукта, °С": [
@@ -237,7 +237,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "yellow"
             ],
             "Дата замера параметров": [
-                "5/10/2023",
+                "5.10.2023",
                 "green"
             ]
         },
@@ -263,7 +263,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "green"
             ],
             "Дата ввода в эксплуатацию": [
-                "9/14/2009",
+                "9.14.2009",
                 "green"
             ],
             "Тощина стенки номанальная, мм": [
@@ -279,7 +279,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "green"
             ],
             "Дата замены участка трубопровода": [
-                "9/14/2009",
+                "9.14.2009",
                 "green"
             ]
         }
@@ -365,7 +365,7 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "green"
             ],
             "Дата последнего ТО": [
-                "2/14/2023",
+                "2.14.2023",
                 "green"
             ],
             "Площадь коррозии резервуара, %": [
@@ -482,7 +482,7 @@ export const BOUNDING_BOXES: SceneObject[] =
         "displayName": "Электродвигатель",
         "data": {
             "Дата ввода в эксплуатацию": [
-                "2/3/2009",
+                "2.3.2009",
                 "green"
             ],
             "Температура подшипников, °С": [

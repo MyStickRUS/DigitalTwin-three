@@ -30,19 +30,15 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
     table.style.width = "100%";
     wrapper.appendChild(table);
 
-    let i = 1;
     for (const [key, value] of Object.entries(data)) {
         const row = table.insertRow();
-
-        row.style.backgroundColor = i % 2 === 0 ? "#666666" : "black";
-        i++;
 
         const cell1 = row.insertCell(0);
         const spacer = row.insertCell(1)
         const cell2 = row.insertCell(2);
         cell1.textContent = key;
         cell2.textContent = formatValue(value[0]);
-        cell2.style.color = getCellColor(value[1]);
+        cell2.classList.add(getCellColor(value[1]));
         cell1.classList.add('tooltip-cell-left')
         cell2.classList.add('tooltip-cell-right')
         spacer.classList.add('tooltip-spacer');
@@ -65,10 +61,29 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
         updateIntervals.push(interval);
     }
 
+    const spacerRow = table.insertRow();
+    spacerRow.insertCell(0);
+    spacerRow.insertCell(1);
+    spacerRow.insertCell(2);
+    spacerRow.classList.add('tooltip-spacer-row')
+
+    const div = document.createElement('div');
+    div.classList.add('passport-link-wrapper')
+    setTimeout(() => div.classList.add('visible'), 0);
+    const a = document.createElement('a');
+    a.innerText = "Паспорт";
+    a.href = 'https://rcm.systems/en/';
+    a.target="_blank"
+    div.appendChild(a)
+    wrapper.appendChild(div);
+
     return [wrapper, updateIntervals];
 }
 
 function formatValue(val: string | number) {
+    if(!Number.isNaN(Number(val))) {
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+    }
     // TODO: formatting?
     return String(val);
 }
@@ -76,12 +91,12 @@ function formatValue(val: string | number) {
 function getCellColor(color: FacilityDataStatic[1]) {
     switch(color) {
         case "green":
-            return '#29FF00'
+            return 'text-black'
         case "orange":
         case "yellow":
-            return '#ECE21E'
+            return 'text-orange'
         case "red":
-            return '#FF0000'
+            return 'text-red'
     }
 }
 

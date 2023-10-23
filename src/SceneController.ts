@@ -151,11 +151,7 @@ export class SceneController {
             .intersectObjects(interactibleObjects, true)
     }
 
-    private onClick = (event: MouseEvent
-        // | TouchEvent
-        ) => {
-        event.preventDefault();
-
+    private onClick = (event: MouseEvent) => {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -177,7 +173,7 @@ export class SceneController {
             return this.resetCamera()
         }
 
-        if(!closestIntersection?.object) {
+        if(!closestIntersection?.object || this.isCameraZoomedInToObject) {
             return;
         }
 

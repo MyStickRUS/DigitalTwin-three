@@ -1,7 +1,21 @@
 @font-face {
   font-family: 'Open Sans';
   src: url('/fonts/OpenSans-Regular.ttf') format('truetype');
-  font-weight: bold;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans Bold';
+  src: url('/fonts/OpenSans-Bold.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans Medium';
+  src: url('/fonts/OpenSans-Medium.ttf') format('truetype');
+  font-weight: 600;
   font-style: normal;
 }
 
@@ -11,6 +25,7 @@ body {
   overflow: hidden;
   overflow: hidden;
   position: relative;
+  font: normal normal bold 18px/30px Open Sans;
 }
 
 .block {
@@ -33,26 +48,63 @@ span {
 }
 
 #tooltip {
-  font-size: 0.7rem;
   position: absolute;
-  top: 0;
-  left: 0;
-  width: fit-content;
-  height: fit-content;
-  background-color: #000000CC;
-  color: #FFFFFF;
+  color: #000000;
+  /* opacity: 0.90;
+  background: #FFFFFF; */
   z-index: 1;
   border-radius: 5px;
-  border-collapse: separate; 
-  border-spacing: 0; 
   overflow: hidden;
+  padding-bottom: 20px;
 }
 
-#tooltip th:first-child, table td:first-child {
+.tooltip-header-row,
+.passport-link-wrapper,
+#tooltip table {
+  background: #FFFFFF;
+  opacity: 90%;
+}
+
+#tooltip table {
+  border-radius: 0 0 10px 10px;
+}
+
+.passport-link-wrapper a {
+  text-decoration: none;
+  color: #000000;
+  width: 100%;
+  display: block;
+}
+
+.passport-link-wrapper a:hover {
+  opacity: 0.5;
+}
+
+.passport-link-wrapper {
+  opacity: 0;
+  transition-duration: 0.5s;
+  transition-delay: 1s;
+}
+
+.passport-link-wrapper.visible {
+  opacity: 1;
+}
+
+.passport-link-wrapper {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 10px;
+  ;
+}
+
+#tooltip th:first-child,
+table td:first-child {
   border-bottom-left-radius: 5px;
 }
 
-#tooltip th:last-child, table td:last-child {
+#tooltip th:last-child,
+table td:last-child {
   border-bottom-right-radius: 5px;
 }
 
@@ -62,13 +114,13 @@ span {
 
 .annotation {
   position: absolute;
-  width: 1.5em;
-  height: 1.5em;
+  width: 1em;
+  height: 1em;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 18px;
   border: 2px solid white;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
@@ -77,12 +129,18 @@ span {
 }
 
 .tooltip-header-row {
+  border-radius: 10px 10px 0 0;
   display: flex;
   margin: auto;
   height: 3rem;
 }
 
+.tooltip-spacer-row {
+  height: 15px;
+}
+
 span.tooltip-header-span {
+  font: normal normal bold 14px/20px Open Sans Bold;
   padding-left: 3rem;
   padding-right: 3rem;
 }
@@ -92,18 +150,16 @@ span.tooltip-header-span {
   text-align: center;
   font: normal normal bold 18px/30px Open Sans;
   letter-spacing: 0px;
-  color: #FFFFFF;
   opacity: 1;
 }
 
 .tooltip-cell-right {
-  font-weight: bold;
   text-align: center;
   padding-left: 15px;
-  padding-right: 15px;
+  padding-right: 20px;
 
-  text-align: center;
-  font: normal normal bold 14px/19px Open Sans;
+  text-align: right;
+  font: normal normal normal 12px/19px Open Sans Bold;
   letter-spacing: 0px;
   /* color: #29FF00; */
   opacity: 1;
@@ -112,15 +168,14 @@ span.tooltip-header-span {
 }
 
 .tooltip-cell-left {
-  padding-left: 5px;
+  padding-left: 35px;
   padding-right: 20px;
   padding-top: 3px;
   padding-bottom: 3px;
-  
+
   text-align: left;
-  font: normal normal normal 14px/19px Open Sans;
+  font: normal normal normal 12px/19px Open Sans Medium;
   letter-spacing: 0px;
-  color: #FFFFFF;
   opacity: 1;
 }
 
@@ -148,4 +203,17 @@ span.tooltip-header-span {
 
 .annotation span {
   color: white;
+}
+
+.text-black {
+  color: #000000;
+}
+
+.text-red {
+  color: #FF0000;
+
+}
+
+.text-orange {
+  color: #E6BF00;
 }
