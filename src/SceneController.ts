@@ -170,9 +170,8 @@ export class SceneController {
 
         const closestIntersection = this.findCursorIntersectingObjects()[0]
         
-        if(!closestIntersection) {
-            document.querySelectorAll('.tooltip-wrapper').forEach(e => e.remove())
-        }
+        // TODO: inefficient
+        document.querySelectorAll('.tooltip-wrapper').forEach(e => e.remove())
 
         if (closestIntersection) {
             this.tooltippedObject = closestIntersection?.object;
