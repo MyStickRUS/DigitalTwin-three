@@ -1,3 +1,4 @@
+import { escapeSpaces, getTooltipWrapperId, setZIndex } from "./Utils.ts";
 import { FacilityBoxDataDynamic, FacilityDataStatic } from "./objects/index.ts";
 
 export function getHtmlTooltip() {
@@ -10,25 +11,17 @@ export function getHtmlTooltip() {
     return htmlTooltip;
 }
 
-export function generateTooltipTable(displayName: string, data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic }): [HTMLDivElement, number[]] {
-    console.log(displayName);
-    const wrapper = document.createElement("div");
+export function generateTooltipTable(label: string, data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic }): [HTMLDivElement, number[]] | null {
+    console.log(label);
+    
+    const tooltip = document.querySelector(getTooltipWrapperId(label))
+    const table = tooltip?.querySelector('table');
+    
+    if(!table || !tooltip) {
+        return null;
+    }
 
     const updateIntervals = [];
-
-    const firstRow = document.createElement("p");
-    firstRow.classList.add('tooltip-header-row')
-
-    const span = document.createElement('span');
-    span.innerText = displayName;
-    span.style.margin = 'auto';
-    span.classList.add('tooltip-header-span')
-    firstRow.appendChild(span)
-    wrapper.appendChild(firstRow);
-
-    const table = document.createElement("table");
-    table.style.width = "100%";
-    wrapper.appendChild(table);
 
     for (const [key, value] of Object.entries(data)) {
         const row = table.insertRow();
@@ -75,10 +68,36 @@ export function generateTooltipTable(displayName: string, data: { [K: string]: F
     a.href = 'https://rcm.systems/en/';
     a.target="_blank"
     div.appendChild(a)
-    wrapper.appendChild(div);
 
-    return [wrapper, updateIntervals];
+    tooltip.appendChild(div);
+
+    return [tooltip as HTMLDivElement, updateIntervals];
 }
+
+export function generateTooltipNametag(label: string, content: string) {
+    const wrapper = document.createElement("div");
+    wrapper.id = `tooltip-wrapper-${escapeSpaces(label)}`
+    wrapper.classList.add(`tooltip-wrapper`)
+
+    const table = document.createElement("table");
+    table.style.width = "100%";
+
+    const firstRow = document.createElement("p");
+    firstRow.classList.add('tooltip-header-row')
+
+    const span = document.createElement('span');
+    span.innerText = content;
+    span.style.margin = 'auto';
+    span.classList.add('tooltip-header-span')
+
+    wrapper.appendChild(table);
+    // wrapper.appendChild(firstRow);
+    table.appendChild(firstRow)
+    firstRow.appendChild(span)
+
+    return wrapper
+}
+
 
 function formatValue(val: string | number) {
     if(!Number.isNaN(Number(val))) {
@@ -104,4 +123,8 @@ function getRandomIntInclusive(min: number, max: number): string {
   const res = Math.floor(Math.random() * (max - min + 1) + min);
 
   return String(res);
+}
+
+export function resetAnnotationsZIndex() {
+    document.querySelectorAll('.annotation').forEach(el => setZIndex(el as HTMLElement, '2'))
 }

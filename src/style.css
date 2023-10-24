@@ -52,7 +52,7 @@ span {
   color: #000000;
   /* opacity: 0.90;
   background: #FFFFFF; */
-  z-index: 1;
+  z-index: 3;
   border-radius: 5px;
   overflow: hidden;
   padding-bottom: 20px;
@@ -66,7 +66,7 @@ span {
 }
 
 #tooltip table {
-  border-radius: 0 0 10px 10px;
+  border-radius: 10px 10px 10px 10px;
 }
 
 .passport-link-wrapper a {
@@ -76,15 +76,19 @@ span {
   display: block;
 }
 
+table p:only-child {
+  border-radius: 10px;
+}
+
 .passport-link-wrapper a:hover {
   opacity: 0.5;
 }
 
-.passport-link-wrapper {
+/* .passport-link-wrapper {
   opacity: 0;
   transition-duration: 0.5s;
   transition-delay: 1s;
-}
+} */
 
 .passport-link-wrapper.visible {
   opacity: 90%;

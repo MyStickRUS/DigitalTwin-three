@@ -3,6 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { BOUNDING_BOXES } from "./objects";
 
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { getAnnotationIdByFileName } from "./Utils";
 
 // Initialize Draco loader
 const dracoLoader = new DRACOLoader();
@@ -24,7 +25,7 @@ export class ObjectController {
             div.classList.add("m-auto");
             div.classList.add("d-flex");
             div.classList.add(status);
-            div.id = `${box.fileName}-annotation`;
+            div.id = getAnnotationIdByFileName(box.fileName);
 
             if (status === "red") {
                 const span = document.createElement("span");

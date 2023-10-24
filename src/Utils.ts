@@ -42,3 +42,23 @@ export function isUserAgentMobile() {
         )
     );
 }
+
+export function escapeSpaces(str: string) {
+    return str.replace(/ /g, '_')
+}
+
+export function getTooltipWrapperId(label: string) {
+    return `#tooltip-wrapper-${escapeSpaces(label)}`
+}
+
+export function getAnnotationIdByFileName(fileName: string) {
+    return `${escapeSpaces(fileName)}-annotation`
+}
+
+export function setZIndex(el: HTMLElement, val: string) {
+    if(!el) {
+        return;
+    }
+
+    return el.style.zIndex = val;
+}

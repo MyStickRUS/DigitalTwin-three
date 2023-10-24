@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
 import gsap from 'gsap';
-import { generateTooltipTable, getHtmlTooltip } from './Tooltip';
+import { generateTooltipNametag, generateTooltipTable, getHtmlTooltip, resetAnnotationsZIndex } from './Tooltip';
 import { GUI } from 'dat.gui';
-import { getAnnotationScreenPosition, isUserAgentMobile } from './Utils';
+import { escapeSpaces, getAnnotationIdByFileName, getAnnotationScreenPosition, getTooltipWrapperId, isUserAgentMobile, setZIndex } from './Utils';
 
 const IS_DEBUG = false;
 const SHOW_CAMERA_CONTROLS = false;
@@ -58,7 +58,7 @@ export class SceneController {
         // Create scene
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color('lightgray');
-        
+
         // Add Light
         const directionalLight = new THREE.DirectionalLight( 0xffffff, 4 );
         directionalLight.position.set (-10, 10, 10);
@@ -73,7 +73,7 @@ export class SceneController {
         directionalLight.shadow.camera.far = 50; // default
 
         this.scene.add( directionalLight );
-        
+
         if(IS_DEBUG) {
             //Helper
             const shadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
@@ -102,7 +102,7 @@ export class SceneController {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         if(!this.isMobileUserAgent) {
             this.renderer.setPixelRatio(window.devicePixelRatio);
-        } 
+        }
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFShadowMap; // default THREE.PCFShadowMap
@@ -115,6 +115,13 @@ export class SceneController {
         window.addEventListener('orientationchange', this.onWindowResize);
         window.addEventListener('click', this.onClick, false);
         window.addEventListener('dblclick', this.onDoubleClick, false);
+        window.addEventListener('mousemove', this.onMouseMove, false);
+        document.addEventListener('mousedown', function(event) {
+            // prevent test selection on double click
+            if (event.detail > 1) {
+              event.preventDefault();
+            }
+          }, false);
 
         this.htmlTooltip = getHtmlTooltip();
 
@@ -151,7 +158,11 @@ export class SceneController {
             .intersectObjects(interactibleObjects, true)
     }
 
-    private onClick = (event: MouseEvent) => {
+    private onMouseMove = (event: MouseEvent) => {
+        if(this.isCameraZoomedInToObject) {
+            return;
+        }
+
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -159,12 +170,42 @@ export class SceneController {
 
         const closestIntersection = this.findCursorIntersectingObjects()[0]
         
+        if(!closestIntersection) {
+            document.querySelectorAll('.tooltip-wrapper').forEach(e => e.remove())
+        }
+
+        if (closestIntersection) {
+            this.tooltippedObject = closestIntersection?.object;
+            const {displayName} = this.tooltippedObject.parent?.userData;
+            const foo = generateTooltipNametag(this.tooltippedObject.name, displayName);
+            this.showHtmlTooltip()
+            const existingTable = document.querySelectorAll(getTooltipWrapperId(this.tooltippedObject.name));
+
+            resetAnnotationsZIndex();
+
+            const annotation = document.getElementById(getAnnotationIdByFileName(this.tooltippedObject.parent?.userData.fileName))
+            setZIndex(annotation as HTMLElement, '50');
+
+            if(!existingTable.length) {
+                this.htmlTooltip.appendChild(foo);
+            }
+        }
+    }
+
+    private onClick = (event: MouseEvent) => {
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+
+        const closestIntersection = this.findCursorIntersectingObjects()[0]
+
         // const interactibleObjects = this.scene.children.filter(obj => obj.userData.isClickable)
         // const closestIntersection = this.raycaster.intersectObjects(interactibleObjects)[0]
         // closestIntersection && console.log('intersection object', closestIntersection)
         // closestIntersection?.object?.userData && console.log('object userdata', closestIntersection?.object?.userData)
         // closestIntersection?.point && console.log('point', closestIntersection?.point)
-    
+
         // if(!this.mousePointedObject) {
         //     return
         // }
@@ -180,7 +221,7 @@ export class SceneController {
         this.tooltippedObject = closestIntersection?.object;
 
         console.log(this.tooltippedObject)
-    
+
         if (closestIntersection) {
             setTimeout(() => this.isCameraFlying = false, CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS * 1000 + 100)
             this.isCameraZoomedInToObject = true;
@@ -191,7 +232,7 @@ export class SceneController {
                 z: closestIntersection.object.parent?.userData.cameraPosition.z,
                 duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS
             });
-        
+
             // // Move the camera's look-at target to the object's position
             gsap.to(this.controls.target, {
                 x: closestIntersection.point.x,
@@ -203,13 +244,13 @@ export class SceneController {
 
         if (closestIntersection && closestIntersection.object?.parent?.userData?.data) {
             const {displayName, data } = closestIntersection.object?.parent?.userData;
-            this.updateTooltipWithTableData(displayName, data);
+            this.updateTooltipWithTableData(closestIntersection.object.name, data);
             this.showHtmlTooltip();
         }
 
         this.controls.update();
     };
-    
+
 
     private addCameraControl() {
         const gui = new GUI();
@@ -277,14 +318,14 @@ export class SceneController {
         this.htmlTooltip.hidden = true;
     }
 
-    updateTooltipWithTableData(displayName: string, data: any) {
+    updateTooltipWithTableData(label: string, data: any) {
         // Clear current tooltip content
-        while (this.htmlTooltip.firstChild) {
-            this.htmlTooltip.removeChild(this.htmlTooltip.firstChild);
-        }
-    
+        // while (this.htmlTooltip.firstChild) {
+        //     this.htmlTooltip.removeChild(this.htmlTooltip.firstChild);
+        // }
+
         // Add the generated table to the tooltip
-        const [tableElement, updateTimeouts] = generateTooltipTable(displayName, data); 
+        const [tableElement, updateTimeouts] = generateTooltipTable(label, data);
         this.htmlTooltip.appendChild(tableElement);
         this.htmlTooltipUpdateIntervals.forEach(clearInterval);
         this.htmlTooltipUpdateIntervals = updateTimeouts;
@@ -305,7 +346,7 @@ export class SceneController {
     private positionAnnotations() {
         this.boundingBoxes.forEach(box => {
             const pos = getAnnotationScreenPosition(box, this.camera);
-            const annotation = document.getElementById(`${box.userData.fileName}-annotation`);
+            const annotation = document.getElementById(getAnnotationIdByFileName(box.userData.fileName));
 
             if(!annotation || !pos) {
                 return;
