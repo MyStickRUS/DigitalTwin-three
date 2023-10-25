@@ -466,10 +466,6 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "Аварийное",
                 "red"
             ],
-            "Состояние": [
-                "Аварийное",
-                "red"
-            ],
         }
     },
     {

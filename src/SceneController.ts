@@ -170,14 +170,14 @@ export class SceneController {
 
         const closestIntersection = this.findCursorIntersectingObjects()[0]
         
-        // TODO: inefficient
+        // TODO: dirty inefficient hack
         document.querySelectorAll('.tooltip-wrapper').forEach(e => e.remove())
 
         if (closestIntersection) {
             this.tooltippedObject = closestIntersection?.object;
-            const {displayName} = this.tooltippedObject.parent?.userData;
+            const displayName = this.tooltippedObject.parent?.userData?.displayName;
             const foo = generateTooltipNametag(this.tooltippedObject.name, displayName);
-            this.showHtmlTooltip()
+            this.showHtmlTooltip();
             const existingTable = document.querySelectorAll(getTooltipWrapperId(this.tooltippedObject.name));
 
             resetAnnotationsZIndex();
@@ -325,6 +325,10 @@ export class SceneController {
 
         // Add the generated table to the tooltip
         const [tableElement, updateTimeouts] = generateTooltipTable(label, data);
+        if(!tableElement || !updateTimeouts) {
+            return;
+        }
+
         this.htmlTooltip.appendChild(tableElement);
         this.htmlTooltipUpdateIntervals.forEach(clearInterval);
         this.htmlTooltipUpdateIntervals = updateTimeouts;

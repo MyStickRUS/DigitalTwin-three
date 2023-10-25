@@ -11,14 +11,14 @@ export function getHtmlTooltip() {
     return htmlTooltip;
 }
 
-export function generateTooltipTable(label: string, data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic }): [HTMLDivElement, number[]] | null {
+export function generateTooltipTable(label: string, data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic }): [HTMLDivElement, number[]] | [] {
     console.log(label);
     
     const tooltip = document.querySelector(getTooltipWrapperId(label))
     const table = tooltip?.querySelector('table');
     
     if(!table || !tooltip) {
-        return null;
+        return [];
     }
 
     const updateIntervals = [];
