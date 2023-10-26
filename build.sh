@@ -20,8 +20,8 @@ if [ $? -ne 0 ]; then
 fi
 
 # Try building the Docker containers
-if docker compose build; then
+if docker-compose build; then
     echo build successful, bring down the current containers and start new ones
-    docker compose down -v
-    docker compose up -d
+    docker-compose down -v
+    docker-compose up -d
 fi
