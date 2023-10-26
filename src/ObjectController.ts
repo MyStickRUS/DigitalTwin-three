@@ -10,7 +10,7 @@ const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderConfig({ type: 'js' });
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 
-const SCENE_MODEL_FILENAME = "Zavod_v4_compressed.glb";
+const SCENE_MODEL_FILENAME = "Zavod_v5_compressed.glb";
 const SCENE_U_ANIMATE_MATERIAL_NAMES = ['Wire', 'Tube'];
 const SCENE_U_ANIMATION_SPEED = 0.003;
 const SCENE_SCALE = 0.15;
@@ -54,7 +54,7 @@ export class ObjectController {
                 //Shadows enable
                 gltf.scene.traverse ( function ( child )
                     {
-                        if (child instanceof THREE.Mesh) {
+                        if (child.name != 'Wire' && child instanceof THREE.Mesh) {
                             child.castShadow = true;
                             child.receiveShadow = true;
                         }
