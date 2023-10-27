@@ -95,7 +95,6 @@ export class SceneController {
         // Initialize raycaster and mouse vector
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
-
         this.clock = new THREE.Clock();
 
         // Setup renderer

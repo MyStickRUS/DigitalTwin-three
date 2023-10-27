@@ -54,7 +54,7 @@ export class ObjectController {
                 //Shadows enable
                 gltf.scene.traverse ( function ( child )
                     {
-                        if (child.name != 'Wire' && child instanceof THREE.Mesh) {
+                        if ( child.name != 'Grid' && child.name != 'Scheme' && child instanceof THREE.Mesh) {
                             child.castShadow = true;
                             child.receiveShadow = true;
                         }
@@ -63,6 +63,13 @@ export class ObjectController {
                             shadMaterial.opacity = 0.4;
                             child.material = shadMaterial
                         }
+                         if(child.name === 'Scheme' && child instanceof THREE.Mesh) {
+                            const schemeMaterial = new THREE.MeshBasicMaterial({color: 0xff868a});
+                            schemeMaterial.transparent = true;
+                            schemeMaterial.opacity = 0.5;
+                            child.material = schemeMaterial
+                        }
+                        
                     });
                 scene.add(model);
                 this.animateMaterialsOffset(scene);
