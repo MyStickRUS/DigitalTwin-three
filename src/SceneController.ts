@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { generateTooltipNametag, generateTooltipTable, getHtmlTooltip, resetAnnotationsZIndex } from './Tooltip';
 import { GUI } from 'dat.gui';
 import { escapeSpaces, getAnnotationIdByFileName, getAnnotationScreenPosition, getTooltipWrapperId, isUserAgentMobile, setZIndex } from './Utils';
-
+import { SceneObject } from './objects/index'
 const IS_DEBUG = false;
 const SHOW_CAMERA_CONTROLS = false;
 const CAMERA_INITIAL_POSITION = {
@@ -241,8 +241,9 @@ export class SceneController {
         }
 
         if (closestIntersection && closestIntersection.object?.parent?.userData?.data) {
-            const {displayName, data } = closestIntersection.object?.parent?.userData;
-            this.updateTooltipWithTableData(closestIntersection.object.name, data);
+            const {displayName, data, passportURI } = closestIntersection.object?.parent?.userData;
+            
+            this.updateTooltipWithTableData(closestIntersection.object.name, data, passportURI);
             this.showHtmlTooltip();
         }
 
@@ -316,14 +317,14 @@ export class SceneController {
         this.htmlTooltip.hidden = true;
     }
 
-    updateTooltipWithTableData(label: string, data: any) {
+    updateTooltipWithTableData(label: string, data: SceneObject["data"], passportURI: string) {
         // Clear current tooltip content
         // while (this.htmlTooltip.firstChild) {
         //     this.htmlTooltip.removeChild(this.htmlTooltip.firstChild);
         // }
 
         // Add the generated table to the tooltip
-        const [tableElement, updateTimeouts] = generateTooltipTable(label, data);
+        const [tableElement, updateTimeouts] = generateTooltipTable(label, data, passportURI);
         if(!tableElement || !updateTimeouts) {
             return;
         }

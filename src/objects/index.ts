@@ -4,6 +4,7 @@ export type SceneObject = {
     annotation: Partial<Coordinates> & {type: FacilityStatus};
     data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic };
     displayName: string;
+    passportURI?: string;
 };
 
 export type FacilityDataStatic = [number | string, FacilityStatus];
@@ -151,6 +152,7 @@ export const BOUNDING_BOXES: SceneObject[] =
             "type": "yellow"
         },
         "displayName": "Насос",
+        passportURI: "http://94.79.54.196:18080/equipmentPassport/649817050",
         "data": {
             "Риск": [
                 "45 (высокий)",
@@ -239,7 +241,8 @@ export const BOUNDING_BOXES: SceneObject[] =
                 "green"
             ]
         },
-        "displayName": "Резервуар РВС-20000"
+        "displayName": "Резервуар РВС-20000",
+        passportURI: "http://94.79.54.196:38081/equipmentPassport/368",
     },
     {
         "fileName": "06.glb",
@@ -391,6 +394,7 @@ export const BOUNDING_BOXES: SceneObject[] =
             "type": "orange"
         },
         "displayName": "КТПН 1",
+        passportURI: "http://94.79.54.196:18080/equipmentPassport/3141765",
         "data": {
             "ИТС, %": [
                 "45.7",
@@ -449,6 +453,7 @@ export const BOUNDING_BOXES: SceneObject[] =
             "type": "red"
         },
         "displayName": "КТПН 2",
+        passportURI: "http://94.79.54.196:18080/equipmentPassport/3141765",
         "data": {
             "ИТС, %": [
                 24.6,

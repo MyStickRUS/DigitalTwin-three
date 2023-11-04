@@ -1,5 +1,5 @@
 import { escapeSpaces, getTooltipWrapperId, setZIndex } from "./Utils.ts";
-import { FacilityBoxDataDynamic, FacilityDataStatic } from "./objects/index.ts";
+import { FacilityDataStatic, SceneObject } from "./objects/index.ts";
 
 export function getHtmlTooltip() {
     const htmlTooltip = document.querySelector("div#tooltip");
@@ -11,7 +11,7 @@ export function getHtmlTooltip() {
     return htmlTooltip;
 }
 
-export function generateTooltipTable(label: string, data: { [K: string]: FacilityDataStatic | FacilityBoxDataDynamic }): [HTMLDivElement, number[]] | [] {
+export function generateTooltipTable(label: string, data: SceneObject["data"], passportURI: string): [HTMLDivElement, number[]] | [] {
     console.log(label);
     
     const tooltip = document.querySelector(getTooltipWrapperId(label))
@@ -60,18 +60,26 @@ export function generateTooltipTable(label: string, data: { [K: string]: Facilit
     spacerRow.insertCell(2);
     spacerRow.classList.add('tooltip-spacer-row')
 
+    if(passportURI) {
+        const linkDiv = createPassportLink(passportURI)
+        tooltip.appendChild(linkDiv);
+    }
+
+    return [tooltip as HTMLDivElement, updateIntervals];
+}
+
+function createPassportLink(passportURI: string): HTMLDivElement {
     const div = document.createElement('div');
     div.classList.add('passport-link-wrapper')
     setTimeout(() => div.classList.add('visible'), 0);
     const a = document.createElement('a');
     a.innerText = "Паспорт";
-    a.href = 'https://rcm.systems/en/';
+    
+    a.href = passportURI;
     a.target="_blank"
     div.appendChild(a)
 
-    tooltip.appendChild(div);
-
-    return [tooltip as HTMLDivElement, updateIntervals];
+    return div;
 }
 
 export function generateTooltipNametag(label: string, content: string) {
