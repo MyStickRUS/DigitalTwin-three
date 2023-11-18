@@ -24,4 +24,5 @@ if docker-compose build; then
     echo build successful, bring down the current containers and start new ones
     docker-compose down -v
     docker-compose up -d
+    docker image prune --filter label=stage=builder --force
 fi
