@@ -1,5 +1,6 @@
 # Use official Node image
 FROM node:latest
+LABEL stage=builder
 
 # Set working directory
 WORKDIR /app
