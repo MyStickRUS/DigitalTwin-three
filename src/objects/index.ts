@@ -152,7 +152,7 @@ export const BOUNDING_BOXES: SceneObject[] =
             "type": "yellow"
         },
         "displayName": "Насосная станция №2",
-        passportURI: "http://192.168.4.86:18080/equipmentPassport/649817050",
+        passportURI: "http://192.168.4.86/EnergySubAnalysis_DetailView/b84ff16c-645a-4db7-b9a3-bb208f4dc199",
         "data": {
             "УРЭ НА-4 (кВт*ч/м3)": [
                 "23,04 (+13,04)",
