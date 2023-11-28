@@ -163,7 +163,7 @@ span.tooltip-header-span {
   padding-right: 20px;
 
   text-align: right;
-  font: normal normal normal 12px/19px Open Sans Bold;
+  font: normal normal normal 12px/15px Open Sans Bold;
   letter-spacing: 0px;
   /* color: #29FF00; */
   opacity: 1;
@@ -178,7 +178,7 @@ span.tooltip-header-span {
   padding-bottom: 3px;
 
   text-align: left;
-  font: normal normal normal 12px/19px Open Sans Medium;
+  font: normal normal normal 12px/15px Open Sans Medium;
   letter-spacing: 0px;
   opacity: 1;
 }
