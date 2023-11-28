@@ -152,7 +152,6 @@ export const BOUNDING_BOXES: SceneObject[] =
             "type": "yellow"
         },
         "displayName": "Насосная станция №2",
-        passportURI: "http://192.168.4.86/EnergySubAnalysis_DetailView/b84ff16c-645a-4db7-b9a3-bb208f4dc199",
         "data": {
             "УРЭ НА-4 (кВт*ч/м3)": [
                 "23,04 (+13,04)",
@@ -238,7 +237,7 @@ export const BOUNDING_BOXES: SceneObject[] =
             ]
         },
         "displayName": "Резервуар РВС-20000",
-        passportURI: "http://94.79.54.196:38081/equipmentPassport/368",
+
     },
     {
         "fileName": "06.glb",
@@ -390,7 +389,6 @@ export const BOUNDING_BOXES: SceneObject[] =
             "type": "orange"
         },
         "displayName": "КТПН 1",
-        passportURI: "http://94.79.54.196:18080/equipmentPassport/3141765",
         "data": {
             "ИТС, %": [
                 "45.7",
@@ -449,7 +447,6 @@ export const BOUNDING_BOXES: SceneObject[] =
             "type": "red"
         },
         "displayName": "КТПН 2",
-        passportURI: "http://94.79.54.196:18080/equipmentPassport/3141765",
         "data": {
             "ИТС, %": [
                 24.6,
