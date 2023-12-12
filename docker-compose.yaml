@@ -15,7 +15,7 @@ services:
     volumes:
       - build-artifacts:/usr/share/nginx/html:ro
     ports:
-      - "49149:49149"
+      - "80:80"
 
 volumes:
   build-artifacts:
