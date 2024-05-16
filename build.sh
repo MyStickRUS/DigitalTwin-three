@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BRANCH_NAME="chatgpt"
+BRANCH_NAME="main"
 
 if ! git diff-index --quiet HEAD --; then
     echo "Your working directory is not clean. Please commit or stash your changes."
