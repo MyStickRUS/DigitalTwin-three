@@ -16,6 +16,7 @@ services:
       - build-artifacts:/usr/share/nginx/html:ro
     ports:
       - "80:80"
+      - "443:443"
 
 volumes:
   build-artifacts:
