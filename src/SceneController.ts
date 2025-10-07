@@ -208,11 +208,14 @@ export class SceneController {
         //     return
         // }
 
-        if(this.isMobileUserAgent && this.isCameraZoomedInToObject) {
-            return this.resetCamera()
+        if(!closestIntersection?.object) {
+            if(this.isCameraZoomedInToObject) {
+                return this.resetCamera();
+            }
+            return;
         }
 
-        if(!closestIntersection?.object || this.isCameraZoomedInToObject) {
+        if(this.isCameraZoomedInToObject) {
             return;
         }
 
